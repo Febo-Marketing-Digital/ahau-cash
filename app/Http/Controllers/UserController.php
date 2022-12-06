@@ -29,7 +29,8 @@ class UserController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'lastname' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
+            'email' => ['string', 'email', 'max:255', 'unique:'.User::class],
+            'phonenumber' => ['digits:10'],
         ]);
 
         try {

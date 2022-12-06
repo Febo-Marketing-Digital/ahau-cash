@@ -48,12 +48,13 @@
 
                         <div>
                             <x-input-label for="amount" :value="__('Loan amount')" />
-                            <x-text-input id="amount" name="amount" type="text" class="mt-1 block w-full" placeholder="$" />
+                            <x-text-input id="amount" name="amount" type="text" class="mt-1 block w-full" placeholder="$" value="{{ old('amount') }}" />
+                            <x-input-error class="mt-2" :messages="$errors->get('amount')" />
                         </div>
 
                         <div>
                             <x-input-label for="start_date" :value="__('Loan start date')" />
-                            <x-text-input id="start_date" name="start_date" type="date" class="mt-1 block" required autofocus autocomplete="start_date" />
+                            <x-text-input id="start_date" name="start_date" type="date" class="mt-1 block" required autofocus autocomplete="start_date" value="{{ old('start_date') }}" />
                             <x-input-error class="mt-2" :messages="$errors->get('start_date')" />
                         </div>
 
@@ -63,16 +64,19 @@
                                 <option value="MONTHLY" selected>Mensual</option>
                                 <option value="BIWEEKLY">Quincenal</option>
                             </select>
+                            <x-input-error class="mt-2" :messages="$errors->get('installment_period')" />
                         </div>
 
                         <div>
                             <x-input-label for="installment_quantity" :value="__('Installment Qty')" />
-                            <x-text-input id="installment_quantity" name="installment_quantity" type="text" class="mt-1 block" />
+                            <x-text-input id="installment_quantity" name="installment_quantity" type="text" class="mt-1 block" value="{{ old('installment_quantity') }}" />
+                            <x-input-error class="mt-2" :messages="$errors->get('installment_quantity')" />
                         </div>
 
                         <div>
                             <x-input-label for="loan_roi" :value="__('Loan ROI')" />
-                            <x-text-input id="loan_roi" name="loan_roi" type="text" class="mt-1 block" />
+                            <x-text-input id="loan_roi" name="loan_roi" type="text" class="mt-1 block" value="{{ old('loan_roi') }}" />
+                            <x-input-error class="mt-2" :messages="$errors->get('loan_roi')" />
                         </div>
 
                         <!-- <div>
@@ -89,10 +93,10 @@
                             </select>
                         </div> -->
 
-                        <div>
+                        <!-- <div>
                             <x-input-label for="require_documentation" :value="__('Require update documents')" />
                             <input type="checkbox" name="require_documentation" id="require_documentation" value="yes">
-                        </div>
+                        </div> -->
 
                         <div class="flex items-center gap-4">
                             <x-primary-button>{{ __('Save') }}</x-primary-button>

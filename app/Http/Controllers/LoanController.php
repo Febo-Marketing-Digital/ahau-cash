@@ -16,7 +16,9 @@ class LoanController extends Controller
 {
     public function index() 
     {
-        dump(Loan::with('installments')->get());
+        return view('loan.index', [
+            'loans' => Loan::with('installments')->get(),
+        ]);
     }
 
     public function create(Request $request)
@@ -32,6 +34,14 @@ class LoanController extends Controller
 
     public function store(Request $request)
     {
+        $request->validate([
+            'amount' => ['required', 'min:3'],
+            'start_date' => ['required', 'date'],
+            'installment_period' => ['required', 'in:MONTHLY,BIWEEKLY'],
+            'installment_quantity' => ['required', 'numeric'],
+            'loan_roi' => ['required', 'integer'],
+        ]);
+
         try {
             DB::beginTransaction();
 
@@ -52,9 +62,9 @@ class LoanController extends Controller
     
             // se crea la tabla de amortizacion
             $amount = $request->amount;
-            $installmentAmount = $amount / $request->installment_quantity;
             $percentage = ($request->loan_roi / 100) * $amount;
             $finalBalance = $amount + $percentage;
+            $installmentAmount = $finalBalance / $request->installment_quantity;
 
             for ($i = 1; $i <= $request->installment_quantity; $i++) {
 
@@ -65,6 +75,9 @@ class LoanController extends Controller
                 $startDate = now(); // fecha del pago
                 $endDate = now(); // fecha vencimiento del pago
 
+                // substract current installment from final balance (pending amount to paid)
+                $finalBalance = $finalBalance - $installmentAmount;
+
                 LoanInstallment::create([
                     'loan_id' => $loan->id,
                     'start_date' => $startDate,
@@ -72,8 +85,6 @@ class LoanController extends Controller
                     'amount' => $installmentAmount,
                     'balance' => $finalBalance,
                 ]);
-
-                $finalBalance = $finalBalance - $installmentAmount;
             }   
 
             // se crea el PDF
@@ -83,7 +94,7 @@ class LoanController extends Controller
                 'titulo' => 'Ahau Cash',
                 'loan_amount' => $loan->amount,
                 'roi' => $loan->roi . '%',
-                'payment_amount' => $finalBalance,
+                'payment_amount' => $amount + $percentage,
                 'user' => $user->toArray(),
             ];
         
@@ -93,10 +104,19 @@ class LoanController extends Controller
             // se cambia status a activado (pues ya se asume que la vigencia inicia)
 
             DB::commit();
+
+            return redirect(route('loan.index'));
+            
         } catch (Exception $e) {
             dump($e->getMessage());
             DB::rollBack();
         }
+    }
+
+    public function show(string $uuid) 
+    {
+        $loan = Loan::where('uuid', $uuid)->firstOrFail();
+        return view('loan.show', compact('loan'));
     }
 
     public function testPdfDownload()

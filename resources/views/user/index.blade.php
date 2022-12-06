@@ -6,6 +6,13 @@
     </x-slot>
 
     <div class="py-12">
+
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6 mb-4">
+            <a href="{{ route('client.create') }}" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                Nuevo cliente
+            </a>
+        </div>
+    
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
                 <div class="max-w-2xl">
@@ -16,11 +23,12 @@
                     </header>
 
                     <div class="mt-4">
-                        <table class="table-auto">
+                        <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th>Nombre Completo</th>
-                                    <th>E-mail</th>
+                                    <th><i class="bi bi-person"></i>  Nombre Completo</th>
+                                    <th><i class="bi bi-envelope-at"></i> E-mail</th>
+                                    <th><i class="bi bi-calendar"></i> Cliente desde</th>
                                     <th></th>
                                 </tr>
                             </thead>
@@ -29,10 +37,12 @@
                                 <tr>
                                     <td>{{ $client->name }} {{ $client->lastname }}</td>
                                     <td>{{ $client->email }}</td>
+                                    <td>{{ $client->created_at->diffForHumans() }}</td>
                                     <td>
-                                        <a href="{{ route('client.edit', $client) }}">[EDIT]</a>
-                                        <a href="{{ route('documentation.edit', $client) }}">[DOCS]</a>
-                                        <a href="{{ route('loan.create', ['client_id' => $client->id]) }}">[NEW LOAN]</a>
+                                        <a class="btn btn-dark" title="Ver o editar detalles" href="{{ route('client.edit', $client) }}"><i class="bi bi-person-fill-exclamation"></i></a>
+                                        <a class="btn btn-primary" title="Documentacion"href="{{ route('documentation.edit', $client) }}"><i class="bi bi-person-rolodex"></i></a>
+                                        <a class="btn btn-success" title="Nuevo prestamo" href="{{ route('loan.create', ['client_id' => $client->id]) }}"><i class="bi bi-cash-coin"></i></a>
+                                        <a class="btn btn-danger" href="#" onclick="alert('funcion no disponible');"><i class="bi bi-trash3"></i></a>
                                     </td>
                                 </tr>
                                 @endforeach

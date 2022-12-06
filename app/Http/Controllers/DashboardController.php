@@ -18,7 +18,9 @@ class DashboardController extends Controller
     {
         $latestLoans = Loan::latest()->get();
         $totalClients = User::where('type', 'client')->count();
+        $totalLoans = Loan::count();
+        $totalActiveLoans = Loan::active()->count();
 
-        return view('dashboard', compact('latestLoans', 'totalClients'));
+        return view('dashboard', compact('latestLoans', 'totalClients', 'totalLoans', 'totalActiveLoans'));
     }
 }

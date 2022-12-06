@@ -20,7 +20,7 @@
                             @php($mediaItems = $user->getMedia('documents'))
 
                             @foreach($mediaItems as $mediaItem)
-                                <p><a href="{{ $mediaItem->getFullUrl() }}">{{ $mediaItem->name }}</a></p>
+                                <p><a href="{{ $mediaItem->getFullUrl() }}">{{ $mediaItem->name }}</a> - <a href="#" onclick="alert('funcion no disponible');"><i class="bi bi-trash3"></i></a></p>
                             @endforeach
                         @endif
 
@@ -31,10 +31,10 @@
                                 <label for="file">Documento de identificacion</label>
                                 <input type="file" name="personal_id" id="personal_id">
                             </div>
-                            <div>
+                            <!-- <div>
                                 <label for="file">Comprobante de situacion fiscal</label>
                                 <input type="file" name="tax_id" id="tax_id">
-                            </div>
+                            </div> -->
                             <div>
                                 <label for="file">Comprobante de domicilio</label>
                                 <input type="file" name="proof_of_address" id="proof_of_address">
