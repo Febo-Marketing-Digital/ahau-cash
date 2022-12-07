@@ -34,6 +34,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/client', [UserController::class, 'store'])->name('client.store');
     Route::get('/client/{user}', [UserController::class, 'edit'])->name('client.edit');
     Route::patch('/client/{user}', [UserController::class, 'update'])->name('client.update');
+    Route::get('/client/{user}/delete', [UserController::class, 'delete'])->name('client.delete');
 
     Route::get('/loans', [LoanController::class, 'index'])->name('loan.index');
     Route::get('/loan', [LoanController::class, 'create'])->name('loan.create');

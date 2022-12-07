@@ -15,7 +15,7 @@ class UserController extends Controller
     public function index()
     {
         return view('user.index', [
-            'clients' => User::where('type', '=', 'client')->get(),
+            'clients' => User::where('type', '=', 'client')->latest()->get(),
         ]);
     }
 
@@ -31,6 +31,7 @@ class UserController extends Controller
             'lastname' => ['required', 'string', 'max:255'],
             'email' => ['string', 'email', 'max:255', 'unique:'.User::class],
             'phonenumber' => ['digits:10'],
+            'gender' => ['required', 'in:M,F'],
         ]);
 
         try {
@@ -40,7 +41,7 @@ class UserController extends Controller
                 'name' => $request->name,
                 'lastname' => $request->lastname,
                 'birthdate' => $request->birthdate,
-                'email' => $request->email,
+                'email' => $request->email ?? "",
                 'gender' => $request->gender,
                 'password' => bcrypt('secret'),
                 'type' => 'client',
@@ -85,17 +86,33 @@ class UserController extends Controller
 
     public function update(User $user, Request $request)
     {
+        $user->name = $request->name;
+        $user->lastname = $request->lastname;
+        $user->gender = $request->gender;
+        $user->email = $request->email;
+        $user->birthdate = $request->birthdate;
 
-        //dd($request, $user);
+        $user->save();
 
-        UserBankDetail::create([
-            'user_id' => $user->id,
-            'name' => $request->account_owner_name,
-            'lastname' => $request->account_owner_lastname,
-            'bank_name' => $request->bank_name,
-            'account_number' => $request->account_number,
-            'clabe' => $request->clabe,
-        ]);
+        $bankDetails = UserBankDetail::where('user_id', $user->id)->first();
+
+        if (! $bankDetails) {
+            UserBankDetail::create([
+                'user_id' => $user->id,
+                'name' => $request->account_owner_name,
+                'lastname' => $request->account_owner_lastname,
+                'bank_name' => $request->bank_name,
+                'account_number' => $request->account_number,
+                'clabe' => $request->clabe,
+            ]);
+        }
+
+        return redirect(route('client.index'));
+    }
+
+    public function delete(User $user)
+    {
+        $user->delete();
 
         return redirect(route('client.index'));
     }

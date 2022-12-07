@@ -40,9 +40,9 @@
                                     <td>{{ $client->created_at->diffForHumans() }}</td>
                                     <td>
                                         <a class="btn btn-dark" title="Ver o editar detalles" href="{{ route('client.edit', $client) }}"><i class="bi bi-person-fill-exclamation"></i></a>
-                                        <a class="btn btn-primary" title="Documentacion"href="{{ route('documentation.edit', $client) }}"><i class="bi bi-person-rolodex"></i></a>
+                                        <a class="btn btn-primary" title="Documentacion" href="{{ route('documentation.edit', $client) }}"><i class="bi bi-person-rolodex"></i></a>
                                         <a class="btn btn-success" title="Nuevo prestamo" href="{{ route('loan.create', ['client_id' => $client->id]) }}"><i class="bi bi-cash-coin"></i></a>
-                                        <a class="btn btn-danger" href="#" onclick="alert('funcion no disponible');"><i class="bi bi-trash3"></i></a>
+                                        <a class="btn btn-danger" title="Eliminar cliente" href="{{ route('client.delete', $client) }}" onclick="confirm('Seguro que desea eliminar este registro?');"><i class="bi bi-trash3"></i></a>
                                     </td>
                                 </tr>
                                 @endforeach

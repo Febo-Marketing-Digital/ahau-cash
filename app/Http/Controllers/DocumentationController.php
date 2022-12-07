@@ -17,6 +17,11 @@ class DocumentationController extends Controller
 
     public function update(Request $request, User $user)
     {
+        $request->validate([
+            'personal_id' => ['required', 'file'],
+            'proof_of_address' => ['required', 'file'],
+        ]);
+
         try {
 
             // TODO: If already exists a document, override

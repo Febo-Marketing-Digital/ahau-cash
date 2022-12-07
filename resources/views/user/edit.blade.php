@@ -12,7 +12,7 @@
                 
                     <header>
                         <h2 class="text-lg font-medium text-gray-900">{{ $user->name }} {{ $user->lastname }}</h2>
-                        <p class="mt-1 text-sm text-gray-600">Creado {{ $user->created_at->diffForHumans() }} - Tiene 0 prestamos en su historial.</p>
+                        <p class="mt-1 text-sm text-gray-600">Creado {{ $user->created_at->diffForHumans() }} - Tiene <strong>{{ $user->loans->count() }} prestamos</strong> en su historial.</p>
                     </header>
 
                     <form method="post" action="{{ route('client.update', $user) }}" class="mt-6 space-y-6">

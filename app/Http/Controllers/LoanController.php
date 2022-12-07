@@ -17,7 +17,7 @@ class LoanController extends Controller
     public function index() 
     {
         return view('loan.index', [
-            'loans' => Loan::with('installments')->get(),
+            'loans' => Loan::with('installments')->latest()->get(),
         ]);
     }
 
@@ -99,7 +99,7 @@ class LoanController extends Controller
             ];
         
             $pdf = Pdf::loadView('loan.pdf.test', $data);
-            $pdf->save($loan->uuid);
+            $pdf->save(storage_path('loans/'.$loan->uuid . ".pdf"));
     
             // se cambia status a activado (pues ya se asume que la vigencia inicia)
 
