@@ -4,6 +4,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DocumentationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\LoanController;
+use App\Http\Controllers\LoanInstallmentController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -38,9 +39,11 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/loans', [LoanController::class, 'index'])->name('loan.index');
     Route::get('/loan', [LoanController::class, 'create'])->name('loan.create');
-    Route::get('/loan', [LoanController::class, 'create'])->name('loan.create');
     Route::post('/loan', [LoanController::class, 'store'])->name('loan.store');
     Route::get('/loan/{uuid}', [LoanController::class, 'show'])->name('loan.show');
+
+    Route::get('/loan-installment/{id}', [LoanInstallmentController::class, 'show'])->name('loan.installment.show');
+    Route::post('/loan-installment/{installment}/payment', [LoanInstallmentController::class, 'storeNotePayment'])->name('loan.installment.storeNotePayment');
 
     Route::get('/client/{user}/documentation', [DocumentationController::class, 'edit'])->name('documentation.edit');
     Route::put('/client/{user}/documentation', [DocumentationController::class, 'update'])->name('documentation.update');

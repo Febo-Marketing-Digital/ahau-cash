@@ -107,6 +107,21 @@ class UserController extends Controller
             ]);
         }
 
+        $userAddress = UserAddress::where('user_id', $user->id)->first();
+
+        if (! $userAddress) {
+            UserAddress::create([
+                'user_id' => $user->id,
+                'street' => $request->street,
+                'house_number' => $request->house_number,
+                'locality' => $request->locality,
+                'province' => $request->province,
+                'city' => $request->city,
+                'state' => 'N/A',
+                'postal_code' => $request->postal_code
+            ]);
+        }
+
         return redirect(route('client.index'));
     }
 

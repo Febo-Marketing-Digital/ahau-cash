@@ -8,7 +8,7 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
+                <div class="max-w-10xl">
 
                     <header>
                         <h2 class="text-lg font-medium text-gray-900">Préstamo {{ $loan->uuid }}</h2>
@@ -18,6 +18,13 @@
                     <div class="mt-6 space-y-6">
                         <p>Préstamo solicitado: $ {{ $loan->amount }}</p>
                         <p>Cantidad de devolver: $ {{ $loan->amountToReturn() }} ({{ $loan->roi }} %)</p>
+                        @if($loan->hasMedia('notes'))
+                            @php($mediaItems = $loan->getMedia('notes'))
+
+                            @foreach($mediaItems as $mediaItem)
+                                <p><a href="{{ $mediaItem->getPath() }}" download>DESCARGAR PAGARE TOTAL</a></p>
+                            @endforeach
+                        @endif
                         
                         <table class="table table-striped">
                             <thead>
@@ -27,6 +34,7 @@
                                     <th>Vencimiento</th>
                                     <th>Cantidad</th>
                                     <th>Balance pendiente</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -37,6 +45,11 @@
                                     <td>{{ $installment->end_date }}</td>
                                     <td>{{ $installment->amount }}</td>
                                     <td>{{ $installment->balance }}</td>
+                                    <td>
+                                        <a class="btn btn-dark" href="{{ route('loan.installment.show', $installment->id) }}">
+                                            <i class="bi bi-eye-fill"></i>
+                                        </a>
+                                    </td>
                                 </tr>
                                 @endforeach
                             </tbody>

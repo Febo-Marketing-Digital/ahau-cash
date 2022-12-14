@@ -32,6 +32,7 @@ class LoanController extends Controller
         return view('loan.create', compact('clients'));
     }
 
+    // TODO: los prestamos creados por un usuario no admin, deben ser aprobados antes de estar activos.
     public function store(Request $request)
     {
         $request->validate([
@@ -66,42 +67,40 @@ class LoanController extends Controller
             $finalBalance = $amount + $percentage;
             $installmentAmount = $finalBalance / $request->installment_quantity;
 
+            $daysBy = $request->installment_period == 'MONTHLY' ? 30 : 15;
+            $startDate = \Carbon\Carbon::parse($request->start_date);
+            $endDate = $startDate->copy()->addDays($daysBy);
+
+            $installments = [];
+
             for ($i = 1; $i <= $request->installment_quantity; $i++) {
 
                 if ($installmentAmount > $finalBalance) {
                     $installmentAmount = $finalBalance;
                 }
 
-                $startDate = now(); // fecha del pago
-                $endDate = now(); // fecha vencimiento del pago
+                // Calculate dates
+                if ($i > 1) {
+                    $startDate = $endDate;
+                    $endDate = $startDate->copy()->addDays($daysBy);
+                }
 
                 // substract current installment from final balance (pending amount to paid)
                 $finalBalance = $finalBalance - $installmentAmount;
 
-                LoanInstallment::create([
+                $installment = LoanInstallment::create([
                     'loan_id' => $loan->id,
                     'start_date' => $startDate,
                     'end_date' => $endDate,
                     'amount' => $installmentAmount,
                     'balance' => $finalBalance,
                 ]);
+
+                $installments[] = $installment;
             }   
 
             // se crea el PDF
-            $user = User::find($request->client);
-
-            $data = [
-                'titulo' => 'Ahau Cash',
-                'loan_amount' => $loan->amount,
-                'roi' => $loan->roi . '%',
-                'payment_amount' => $amount + $percentage,
-                'user' => $user->toArray(),
-            ];
-        
-            $pdf = Pdf::loadView('loan.pdf.test', $data);
-            $pdf->save(storage_path('loans/'.$loan->uuid . ".pdf"));
-    
-            // se cambia status a activado (pues ya se asume que la vigencia inicia)
+            $this->generatePdfs($loan, $installments);
 
             DB::commit();
 
@@ -121,18 +120,65 @@ class LoanController extends Controller
 
     public function testPdfDownload()
     {
-        $user = User::latest()->first();
+        $user = User::find(8); //User::latest()->first();
+
+        $latestLoan = $user->loans->last();
+        $address = $user->address->first();
+
+        $percentage = ($latestLoan->roi / 100) * $latestLoan->amount;
+        $finalBalance = $latestLoan->amount + $percentage;
         
         $data = [
-            'titulo' => 'Ahau Cash',
-            'loan_amount' => 20000,
-            'roi' => '20%',
-            'payment_amount' => 24000,
+            'loan_amount' => $latestLoan->amount,
+            'loan_amunt_in_words' => '',
+            'roi' => $latestLoan->roi . '%',
+            'roi_in_words' => '',
+            'payment_amount' => $finalBalance,
+            'fullname' => $user->fullname(),
             'user' => $user->toArray(),
+            'address' => $address,
+            'created_date' => now()->format('d M Y'), // change this
         ];
-    
-        $pdf = Pdf::loadView('loan.pdf.test', $data);
+
+        $pdf = Pdf::loadView('loan.pdf.loan_note', $data);
     
         return $pdf->download(Str::uuid() . '.pdf');
+    }
+
+    // https://support.cloudways.com/en/articles/5121274-how-to-use-digitalocean-block-storage-at-cloudways
+    private function generatePdfs(Loan $loan, array $installments)
+    {
+        // 1 .- se genera el pagare del monto prestado
+
+        $data = [
+            'loan_amount' => $loan->amount,
+            'loan_amunt_in_words' => '',
+            'roi' => $loan->roi . '%',
+            'fullname' => $loan->user->fullname(),
+            'user' => $loan->user->toArray(),
+            'address' => $loan->user->address,
+            'created_date' => now()->format('d M Y'), // change this
+        ];
+    
+        $pdf = Pdf::loadView('loan.pdf.loan_note', $data);
+        $pdf->save(storage_path('loans/'.$loan->uuid . "-total.pdf"));
+
+        $loan
+            ->addMedia(storage_path('loans/'.$loan->uuid . "-total.pdf"))
+            ->toMediaCollection('notes');
+
+        // 2 .- se genera pagare de los intereses totales
+        $pdf = Pdf::loadView('loan.pdf.interest_note');
+        $pdf->save(storage_path('loans/'.$loan->uuid . "-interest.pdf"));
+
+        // 3 .- se generan todos los pagares de los pagos mensuales o quincenales
+        foreach($installments as $key => $installment) {
+            $pdfInstallment = Pdf::loadView('loan.pdf.installment_note', ['num' => $key]);
+            $pdfInstallment->save(storage_path('loans/'.$loan->uuid . "-" . $key . "-.pdf"));
+
+            $installment
+                ->addMedia(storage_path('loans/'.$loan->uuid . "-" . $key . "-.pdf"))
+                ->toMediaCollection('notes');
+        }
     }
 }

@@ -43,7 +43,7 @@
                                     <td>{{ $loan->type }}</td>
                                     <td>$ {{ $loan->amount }}</td>
                                     <td>{{ $loan->roi }} %</td>
-                                    <td>$ {{ $loan->installments->first()->balance }}</td>
+                                    <td>$ {{ $loan->amountToReturn() }}</td>
                                     <td>{{ $loan->installment_period }}</td>
                                     <td>{{ $loan->status }}</td>
                                     <td><a class="btn btn-dark" title="Ver detalles del prestamo" href="{{ route('loan.show', $loan->uuid) }}"><i class="bi bi-eye-fill"></i></a></td>
