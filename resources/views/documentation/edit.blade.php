@@ -30,32 +30,28 @@
                             @php($mediaItems = $user->getMedia('documents'))
 
                             @foreach($mediaItems as $mediaItem)
-                                <p><a href="{{ $mediaItem->getFullUrl() }}">{{ $mediaItem->name }}</a> - <a href="#" onclick="alert('funcion no disponible');"><i class="bi bi-trash3"></i></a></p>
+                                <p><a target="_blank" href="{{ $mediaItem->getTemporaryUrl(\Carbon\Carbon::now()->addMinutes(30)) }}">{{ $mediaItem->getCustomProperty('document_name') ?? $mediaItem->name }}</a> - <a href="#" onclick="alert('funcion no disponible');"><i class="bi bi-trash3"></i></a></p>
                             @endforeach
+                        @else
+                            <form action="{{ route('documentation.update', $user) }}" method="POST" enctype="multipart/form-data">
+                                @csrf
+                                @method('put')
+                                <div>
+                                    <label for="file">Documento de identificacion</label>
+                                    <input type="file" name="personal_id" id="personal_id">
+                                </div>
+                                <div>
+                                    <label for="file">Comprobante de domicilio</label>
+                                    <input type="file" name="proof_of_address" id="proof_of_address">
+                                </div>
+
+                                <br>
+
+                                <p>
+                                    <button class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">Subir</button>
+                                </p>
+                            </form>
                         @endif
-
-                        <form action="{{ route('documentation.update', $user) }}" method="POST" enctype="multipart/form-data">
-                            @csrf
-                            @method('put')
-                            <div>
-                                <label for="file">Documento de identificacion</label>
-                                <input type="file" name="personal_id" id="personal_id">
-                            </div>
-                            <!-- <div>
-                                <label for="file">Comprobante de situacion fiscal</label>
-                                <input type="file" name="tax_id" id="tax_id">
-                            </div> -->
-                            <div>
-                                <label for="file">Comprobante de domicilio</label>
-                                <input type="file" name="proof_of_address" id="proof_of_address">
-                            </div>
-
-                            <br>
-
-                            <p>
-                                <button class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">Subir</button>
-                            </p>
-                        </form>
                     </div>
 
                 </div>

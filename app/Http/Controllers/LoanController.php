@@ -54,8 +54,8 @@ class LoanController extends Controller
                 'user_id' => $request->client,
                 'type' => $request->loan_type,
                 'amount' => $request->amount,
-                'duration_unit' => 12, //$request->loan_duration['unit'],
-                'duration_period' => 'MONTH', //$request->loan_duration['period'],
+                'duration_unit' => $request->installment_quantity, // 12
+                'duration_period' => 'MONTH', // $request->installment_period: TODO cambiar este campo o crear uno nuevo
                 'roi' => $request->loan_roi,
                 'installment_period' => $request->installment_period,
                 'status' => 'PENDING',
@@ -145,10 +145,30 @@ class LoanController extends Controller
         return $pdf->download(Str::uuid() . '.pdf');
     }
 
-    // https://support.cloudways.com/en/articles/5121274-how-to-use-digitalocean-block-storage-at-cloudways
     private function generatePdfs(Loan $loan, array $installments)
     {
-        // 1 .- se genera el pagare del monto prestado
+        // 1 .- se genera el contrato
+        $data = [
+            'client_fullname' => $loan->user->fullname(),
+            'client_address' => $loan->user->address->completeAddress(),
+            'installments' => $loan->installments,
+            'loan_amount' => $loan->amount,
+            'loan_roi' => ($loan->roi / 100) * $loan->amount,
+            'loan_date' => $loan->installments->first()->start_date, // FIX THIS
+            'account_number' => $loan->user->bankDetails->account_number,
+            'account_holder_name' => $loan->user->bankDetails->name . ' ' . $loan->user->bankDetails->lastname,
+            'bank_name' => $loan->user->bankDetails->bank_name,
+            'installments_total' => $loan->installments->count(),
+        ];
+        $pdf = Pdf::loadView('loan.pdf.contract_note', $data);
+        $pdf->save(storage_path('loans/'.$loan->uuid . "-contract.pdf"));
+
+        $loan
+            ->addMedia(storage_path('loans/'.$loan->uuid . "-contract.pdf"))
+            ->withCustomProperties(['note_type' => 'Contrato'])
+            ->toMediaCollection('notes');
+
+        // 2 .- se genera el pagare del monto prestado
 
         $data = [
             'loan_amount' => $loan->amount,
@@ -165,19 +185,21 @@ class LoanController extends Controller
 
         $loan
             ->addMedia(storage_path('loans/'.$loan->uuid . "-total.pdf"))
+            ->withCustomProperties(['note_type' => 'Pagaré Total'])
             ->toMediaCollection('notes');
 
-        // 2 .- se genera pagare de los intereses totales
+        // 3 .- se genera pagare de los intereses totales
         $pdf = Pdf::loadView('loan.pdf.interest_note');
         $pdf->save(storage_path('loans/'.$loan->uuid . "-interest.pdf"));
 
-        // 3 .- se generan todos los pagares de los pagos mensuales o quincenales
+        // 4 .- se generan todos los pagares de los pagos mensuales o quincenales
         foreach($installments as $key => $installment) {
             $pdfInstallment = Pdf::loadView('loan.pdf.installment_note', ['num' => $key]);
             $pdfInstallment->save(storage_path('loans/'.$loan->uuid . "-" . $key . "-.pdf"));
 
             $installment
                 ->addMedia(storage_path('loans/'.$loan->uuid . "-" . $key . "-.pdf"))
+                ->withCustomProperties(['note_type' => 'Pagaré'])
                 ->toMediaCollection('notes');
         }
     }

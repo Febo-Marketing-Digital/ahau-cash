@@ -21,4 +21,15 @@ class UserAddress extends Model
         'country',
         'postal_code',
     ];
+
+
+    /**
+     * Get the user's full address.
+     */
+    public function completeAddress(): string
+    {
+        return $this->street . ' ' . $this->house_number . ', ' 
+            .  $this->locality .  ', ' .  $this->province .  ', '
+            .  $this->city .  ', ' .  $this->state .  ', C.P.: ' .  $this->postal_code .  '.';
+    }
 }

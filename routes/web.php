@@ -5,8 +5,11 @@ use App\Http\Controllers\DocumentationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\LoanController;
 use App\Http\Controllers\LoanInstallmentController;
+use App\Http\Controllers\StaffController;
+use App\Http\Controllers\TestController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,6 +33,11 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    Route::get('/staff-list', [StaffController::class, 'index'])->name('staff.index');
+    Route::get('/staff', [StaffController::class, 'create'])->name('staff.create');
+    Route::post('/staff', [StaffController::class, 'store'])->name('staff.store');
+    Route::get('/staff/{user}', [StaffController::class, 'show'])->name('staff.show');
+
     Route::get('/clients', [UserController::class, 'index'])->name('client.index');
     Route::get('/client', [UserController::class, 'create'])->name('client.create');
     Route::post('/client', [UserController::class, 'store'])->name('client.store');
@@ -47,8 +55,10 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/client/{user}/documentation', [DocumentationController::class, 'edit'])->name('documentation.edit');
     Route::put('/client/{user}/documentation', [DocumentationController::class, 'update'])->name('documentation.update');
+    Route::delete('/client/{user}/documentation', [DocumentationController::class, 'destroy'])->name('documentation.destroy');
 
     Route::get('test', [LoanController::class, 'testPdfDownload']);
+    Route::get('test/render/{loan}/contract', [TestController::class, 'renderNote']);
 });
 
 require __DIR__.'/auth.php';

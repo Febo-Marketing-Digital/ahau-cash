@@ -46,6 +46,12 @@
                             {{ __('Profile') }}
                         </x-dropdown-link>
 
+                        @if(auth()->user()->type == 'admin')
+                        <x-dropdown-link :href="route('staff.index')">
+                            {{ __('Staff') }}
+                        </x-dropdown-link>
+                        @endif
+
                         <!-- Authentication -->
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
@@ -91,6 +97,12 @@
                 <x-responsive-nav-link :href="route('profile.edit')">
                     {{ __('Profile') }}
                 </x-response-nav-link>
+
+                @if(auth()->user()->type == 'admin')
+                <x-responsive-nav-link :href="route('staff.index')">
+                    {{ __('Staff') }}
+                </x-response-nav-link>
+                @endif
 
                 <!-- Authentication -->
                 <form method="POST" action="{{ route('logout') }}">

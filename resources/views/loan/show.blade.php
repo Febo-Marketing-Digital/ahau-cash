@@ -22,7 +22,7 @@
                             @php($mediaItems = $loan->getMedia('notes'))
 
                             @foreach($mediaItems as $mediaItem)
-                                <p><a href="{{ $mediaItem->getPath() }}" download>DESCARGAR PAGARE TOTAL</a></p>
+                                <p>DESCARGAR PDF: <a href="{{ $mediaItem->getTemporaryUrl(Carbon\Carbon::now()->addMinutes(10)) }}" download>{{ $mediaItem->name }}</a></p>
                             @endforeach
                         @endif
                         
@@ -35,6 +35,7 @@
                                     <th>Cantidad</th>
                                     <th>Balance pendiente</th>
                                     <th></th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -46,7 +47,12 @@
                                     <td>{{ $installment->amount }}</td>
                                     <td>{{ $installment->balance }}</td>
                                     <td>
-                                        <a class="btn btn-dark" href="{{ route('loan.installment.show', $installment->id) }}">
+                                        <a class="btn btn-dark" title="descargar PDF" href="{{ route('loan.installment.show', $installment->id) }}">
+                                            <i class="bi bi-arrow-down-square"></i>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a class="btn btn-dark" title="detalles del pagaré" href="{{ route('loan.installment.show', $installment->id) }}">
                                             <i class="bi bi-eye-fill"></i>
                                         </a>
                                     </td>
