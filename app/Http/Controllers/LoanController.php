@@ -189,12 +189,28 @@ class LoanController extends Controller
             ->toMediaCollection('notes');
 
         // 3 .- se genera pagare de los intereses totales
-        $pdf = Pdf::loadView('loan.pdf.interest_note');
+        $data = [
+            'loan_insterest_amount' => ($loan->roi / 100) * $loan->amount,
+            'roi' => $loan->roi . '%',
+            'fullname' => $loan->user->fullname(),
+            'user' => $loan->user->toArray(),
+            'address' => $loan->user->address,
+        ];
+
+        $pdf = Pdf::loadView('loan.pdf.interest_note', $data);
         $pdf->save(storage_path('loans/'.$loan->uuid . "-interest.pdf"));
 
         // 4 .- se generan todos los pagares de los pagos mensuales o quincenales
         foreach($installments as $key => $installment) {
-            $pdfInstallment = Pdf::loadView('loan.pdf.installment_note', ['num' => $key]);
+            $data = [
+                'loan_installment_amount' => $installment->amount,
+                'roi' => $loan->roi . '%',
+                'fullname' => $loan->user->fullname(),
+                'user' => $loan->user->toArray(),
+                'address' => $loan->user->address,
+            ];
+
+            $pdfInstallment = Pdf::loadView('loan.pdf.installment_note', $data);
             $pdfInstallment->save(storage_path('loans/'.$loan->uuid . "-" . $key . "-.pdf"));
 
             $installment
