@@ -63,8 +63,7 @@
 
                         @if($user->address)
                             <div>
-                                <p>Dirección: {{ $user->address->first()->street }} {{ $user->address->first()->house_number }}</p>
-                                <p>{{ $user->address->first()->locality }} {{ $user->address->first()->province }} CDMX {{ $user->address->first()->postal_code }}</p>
+                                <p>Dirección: {{ $user->address->completeAddress() }}</p>
                                 <p><a  href="#" onclick="alert('funcion no disponible');">Click acá para cambiar dirección</a></p>
                             </div>
                         @else
