@@ -22,7 +22,7 @@
                             @php($mediaItems = $loan->getMedia('notes'))
 
                             @foreach($mediaItems as $mediaItem)
-                                <p>DESCARGAR PDF: <a href="{{ $mediaItem->getTemporaryUrl(Carbon\Carbon::now()->addMinutes(10)) }}" download>{{ $mediaItem->name }}</a></p>
+                                <p>DESCARGAR PDF: <a href="{{ $mediaItem->getTemporaryUrl(Carbon\Carbon::now()->addMinutes(10)) }}" download>{{ $mediaItem->getCustomProperty('note_name') ?? $mediaItem->name }}</a></p>
                             @endforeach
                         @endif
                         
@@ -40,6 +40,9 @@
                             </thead>
                             <tbody>
                                 @foreach($loan->installments as $key => $installment)
+                                @if($installment->hasMedia('notes'))
+                                    @php($mediaItems = $installment->getMedia('notes'))
+                                @endif
                                 <tr>
                                     <td>{{ $key + 1 }}</td>
                                     <td>{{ $installment->start_date }}</td>
@@ -47,9 +50,13 @@
                                     <td>{{ $installment->amount }}</td>
                                     <td>{{ $installment->balance }}</td>
                                     <td>
-                                        <a class="btn btn-dark" title="descargar PDF" href="{{ route('loan.installment.show', $installment->id) }}">
+                                        @if($mediaItems)
+                                        <a class="btn btn-dark" title="descargar PDF" href="{{ $mediaItems[0]->getTemporaryUrl(Carbon\Carbon::now()->addMinutes(10)) }}" download>
                                             <i class="bi bi-arrow-down-square"></i>
                                         </a>
+                                        @else
+                                        N/A
+                                        @endif
                                     </td>
                                     <td>
                                         <a class="btn btn-dark" title="detalles del pagaré" href="{{ route('loan.installment.show', $installment->id) }}">

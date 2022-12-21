@@ -165,7 +165,7 @@ class LoanController extends Controller
 
         $loan
             ->addMedia(storage_path('loans/'.$loan->uuid . "-contract.pdf"))
-            ->withCustomProperties(['note_type' => 'Contrato'])
+            ->withCustomProperties(['note_type' => 'contract_note', 'note_name' => 'Contrato'])
             ->toMediaCollection('notes');
 
         // 2 .- se genera el pagare del monto prestado
@@ -185,7 +185,7 @@ class LoanController extends Controller
 
         $loan
             ->addMedia(storage_path('loans/'.$loan->uuid . "-total.pdf"))
-            ->withCustomProperties(['note_type' => 'Pagaré Total'])
+            ->withCustomProperties(['note_type' => 'total_amount_note', 'note_name' => 'Pagaré Total'])
             ->toMediaCollection('notes');
 
         // 3 .- se genera pagare de los intereses totales
@@ -199,6 +199,11 @@ class LoanController extends Controller
 
         $pdf = Pdf::loadView('loan.pdf.interest_note', $data);
         $pdf->save(storage_path('loans/'.$loan->uuid . "-interest.pdf"));
+
+        $loan
+            ->addMedia(storage_path('loans/'.$loan->uuid . "-interest.pdf"))
+            ->withCustomProperties(['note_type' => 'total_interests_note', 'note_name' => 'Pagaré Intereses'])
+            ->toMediaCollection('notes');
 
         // 4 .- se generan todos los pagares de los pagos mensuales o quincenales
         foreach($installments as $key => $installment) {
@@ -215,7 +220,7 @@ class LoanController extends Controller
 
             $installment
                 ->addMedia(storage_path('loans/'.$loan->uuid . "-" . $key . "-.pdf"))
-                ->withCustomProperties(['note_type' => 'Pagaré'])
+                ->withCustomProperties(['note_type' => 'installment_note', 'note_name' => 'Pagaré ' . $key])
                 ->toMediaCollection('notes');
         }
     }
