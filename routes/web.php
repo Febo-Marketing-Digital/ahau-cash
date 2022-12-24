@@ -49,6 +49,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/loan', [LoanController::class, 'create'])->name('loan.create');
     Route::post('/loan', [LoanController::class, 'store'])->name('loan.store');
     Route::get('/loan/{uuid}', [LoanController::class, 'show'])->name('loan.show');
+    Route::get('/loan/{loan}/delete', [LoanController::class, 'destroy'])->name('loan.delete');
 
     Route::get('/loan-installment/{id}', [LoanInstallmentController::class, 'show'])->name('loan.installment.show');
     Route::post('/loan-installment/{installment}/payment', [LoanInstallmentController::class, 'storeNotePayment'])->name('loan.installment.storeNotePayment');

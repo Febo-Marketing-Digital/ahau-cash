@@ -26,7 +26,11 @@ class LoanController extends Controller
         if ($request->has('client_id')) {
             $clients = User::where('id', $request->get('client_id'))->get();
         } else {
-            $clients = User::where('type', 'client')->get();
+            $allCLients = User::with('address', 'bankDetails')->where('type', 'client')->get();
+
+            $clients = $allCLients->reject(function($client) {
+                return is_null($client->address) or is_null($client->bankDetails);
+            });
         }
 
         return view('loan.create', compact('clients'));
@@ -36,6 +40,7 @@ class LoanController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'loan_type' => 'required',
             'amount' => ['required', 'min:3'],
             'start_date' => ['required', 'date'],
             'installment_period' => ['required', 'in:MONTHLY,BIWEEKLY'],
@@ -58,7 +63,7 @@ class LoanController extends Controller
                 'duration_period' => 'MONTH', // $request->installment_period: TODO cambiar este campo o crear uno nuevo
                 'roi' => $request->loan_roi,
                 'installment_period' => $request->installment_period,
-                'status' => 'PENDING',
+                'status' => auth()->user()->type == 'admin' ? 'APPROVED' : 'PENDING',
             ]);
     
             // se crea la tabla de amortizacion
@@ -118,31 +123,16 @@ class LoanController extends Controller
         return view('loan.show', compact('loan'));
     }
 
-    public function testPdfDownload()
+    public function destroy(Loan $loan)
     {
-        $user = User::find(8); //User::latest()->first();
+        if (auth()->user()->type == 'admin') {
+            // valida si el prestamo no esta en proceso???
+            $loan->delete();
+            // ó
+            //$loan->deletePreservingMedia(); // all associated files will be preserved 
+        }
 
-        $latestLoan = $user->loans->last();
-        $address = $user->address->first();
-
-        $percentage = ($latestLoan->roi / 100) * $latestLoan->amount;
-        $finalBalance = $latestLoan->amount + $percentage;
-        
-        $data = [
-            'loan_amount' => $latestLoan->amount,
-            'loan_amunt_in_words' => '',
-            'roi' => $latestLoan->roi . '%',
-            'roi_in_words' => '',
-            'payment_amount' => $finalBalance,
-            'fullname' => $user->fullname(),
-            'user' => $user->toArray(),
-            'address' => $address,
-            'created_date' => now()->format('d M Y'), // change this
-        ];
-
-        $pdf = Pdf::loadView('loan.pdf.loan_note', $data);
-    
-        return $pdf->download(Str::uuid() . '.pdf');
+        return redirect(route('loan.index'));
     }
 
     private function generatePdfs(Loan $loan, array $installments)

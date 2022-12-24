@@ -17,35 +17,36 @@
 
                     <div class="mt-6 space-y-6">
                         <p>Fecha generado: {{ $item->start_date }}</p>
-                        <p>Fecha vencimiento: {{ $item->end_date }} (TODO: color color rojo si ya vencio)</p>
+                        <p>Fecha vencimiento: {{ $item->end_date }}</p>
                         <p>Cantidad a pagar: {{ $item->amount }}</p>
-                        <p>Pagado el: {{ $item->paid_at ?? 'NO PAGADO' }}</p>
+                        <p>Pagado el: <span class="badge bg-dark">{{ $item->paid_at ?? 'NO PAGADO' }}</span></p>
 
 
-                         @if($item->hasMedia('payments'))
+                        @if($item->hasMedia('payments'))
                             @php($mediaItems = $item->getMedia('payments'))
 
                             @foreach($mediaItems as $mediaItem)
-                                <p><a href="{{ $mediaItem->getFullUrl() }}">{{ $mediaItem->name }}</a> - <a href="#" onclick="alert('funcion no disponible');"><i class="bi bi-trash3"></i></a></p>
+                                <p><a target="_blank" href="{{ $mediaItem->getFullUrl() }}">{{ $mediaItem->name }}</a> - <a href="#" onclick="alert('funcion no disponible');"><i class="bi bi-trash3"></i></a></p>
                             @endforeach
                         @endif
 
-                        @if(! $item->paid_at)
+                        @if(! $item->paid_at && auth()->user()->type == 'admin')
+                        <div class="pt-6">
+                            <p class="mt-1 text-sm text-gray-600">Subir un comprobante de pago para marcar este pagaré como liquidado</p>
+                            <form action="{{ route('loan.installment.storeNotePayment', ['installment' => $item]) }}" method="POST" enctype="multipart/form-data">
+                                @csrf
+                                <div>
+                                    <label for="file">Comprobante de pago</label>
+                                    <input type="file" name="proof_of_payment" id="proof_of_payment">
+                                </div>
 
-                        <form action="{{ route('loan.installment.storeNotePayment', ['installment' => $item]) }}" method="POST" enctype="multipart/form-data">
-                            @csrf
-                            <div>
-                                <label for="file">Comprobante de pago</label>
-                                <input type="file" name="proof_of_payment" id="proof_of_payment">
-                            </div>
+                                <br>
 
-                            <br>
-
-                            <p>
-                                <button class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">Subir</button>
-                            </p>
-                        </form>
-
+                                <p>
+                                    <button class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">Subir</button>
+                                </p>
+                            </form>
+                        </div>
                         @endif
                     </div>
 

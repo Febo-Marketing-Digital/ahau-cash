@@ -9,10 +9,11 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
-                    <!-- <p>Últimos préstamos {{ $latestLoans }}</p> -->
                     <p>Total clientes: {{ $totalClients }}</p>
-                    <p>Total de préstamos: {{ $totalLoans }}</p>
-                    <p>Préstamos activos: {{ $totalActiveLoans }}</p>
+
+                    <p> Prestamos totales (cantidad y cuanto es en dinero)<p>
+                    <p> Prestamos activos (cantidad y cuanto es en dinero)<p>
+                    <p> Ganancias (total de intereses) </p>
                 </div>
             </div>
         </div>

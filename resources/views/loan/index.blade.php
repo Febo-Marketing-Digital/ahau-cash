@@ -29,7 +29,7 @@
                                     <th><i class="bi bi-person"></i> Cliente</th>
                                     <th><i class="bi bi-list"></i> Tipo</th>
                                     <th><i class="bi bi-cash-coin"></i> Cant. Prestamo</th>
-                                    <th><i class="bi bi-bank"></i> ROI</th>
+                                    <th><i class="bi bi-bank"></i> % Interés</th>
                                     <th><i class="bi bi-cash-stack"></i> Cant. a devolver</th>
                                     <th><i class="bi bi-calendar-check"></i> Periocidad cuotas</th>
                                     <th><i class="bi bi-check2-square"></i> Status</th>
@@ -39,14 +39,24 @@
                             <tbody>
                                 @foreach($loans as $loan)                        
                                 <tr>
-                                    <td>{{ $loan->user->fullname() }}</td>
+                                    <td>
+                                        @if(auth()->user()->type == 'admin' && $loan->status == 'PENDING') 
+                                            <i class="bi bi-circle text-primary"></i> 
+                                        @else
+                                            <i class="bi bi-check-circle text-success"></i> 
+                                        @endif
+                                        {{ $loan->user->fullname() }}
+                                    </td>
                                     <td>{{ $loan->type }}</td>
-                                    <td>$ {{ $loan->amount }}</td>
+                                    <td>{{ $loan->formattedAmount() }}</td>
                                     <td>{{ $loan->roi }} %</td>
-                                    <td>$ {{ $loan->amountToReturn() }}</td>
+                                    <td>{{ $loan->amountToReturn() }}</td>
                                     <td>{{ $loan->installment_period }}</td>
-                                    <td>{{ $loan->status }}</td>
-                                    <td><a class="btn btn-dark" title="Ver detalles del prestamo" href="{{ route('loan.show', $loan->uuid) }}"><i class="bi bi-eye-fill"></i></a></td>
+                                    <td><span class="badge bg-{{ $loan->loanPaymentStatus()[1] }}">{{ $loan->loanPaymentStatus()[0] }}</span></td>
+                                    <td>
+                                        <a class="btn btn-dark" title="Ver detalles del prestamo" href="{{ route('loan.show', $loan->uuid) }}"><i class="bi bi-eye-fill"></i></a>
+                                        <a class="btn btn-danger" title="Eliminar préstamo" href="{{ route('loan.delete', $loan) }}" onclick="confirm('Seguro que desea eliminar este préstamo?');"><i class="bi bi-trash3"></i></a>
+                                    </td>
                                 </tr>
                                 @endforeach
                             </tbody>

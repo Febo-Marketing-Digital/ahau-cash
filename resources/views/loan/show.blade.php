@@ -16,13 +16,13 @@
                     </header>
 
                     <div class="mt-6 space-y-6">
-                        <p>Préstamo solicitado: $ {{ $loan->amount }}</p>
-                        <p>Cantidad de devolver: $ {{ $loan->amountToReturn() }} ({{ $loan->roi }} %)</p>
+                        <p>Préstamo solicitado: {{ $loan->formattedAmount() }}</p>
+                        <p>Cantidad de devolver: {{ $loan->amountToReturn() }} ({{ $loan->roi }} %)</p>
                         @if($loan->hasMedia('notes'))
                             @php($mediaItems = $loan->getMedia('notes'))
 
                             @foreach($mediaItems as $mediaItem)
-                                <p>DESCARGAR PDF: <a href="{{ $mediaItem->getTemporaryUrl(Carbon\Carbon::now()->addMinutes(10)) }}" download>{{ $mediaItem->getCustomProperty('note_name') ?? $mediaItem->name }}</a></p>
+                                <p>DESCARGAR PDF: <a target="_blank" href="{{ $mediaItem->getTemporaryUrl(Carbon\Carbon::now()->addMinutes(10)) }}" download>{{ $mediaItem->getCustomProperty('note_name') ?? $mediaItem->name }}</a></p>
                             @endforeach
                         @endif
                         
@@ -51,7 +51,7 @@
                                     <td>{{ $installment->balance }}</td>
                                     <td>
                                         @if($mediaItems)
-                                        <a class="btn btn-dark" title="descargar PDF" href="{{ $mediaItems[0]->getTemporaryUrl(Carbon\Carbon::now()->addMinutes(10)) }}" download>
+                                        <a class="btn btn-dark" target="_blank" title="descargar PDF" href="{{ $mediaItems[0]->getTemporaryUrl(Carbon\Carbon::now()->addMinutes(10)) }}" download>
                                             <i class="bi bi-arrow-down-square"></i>
                                         </a>
                                         @else
