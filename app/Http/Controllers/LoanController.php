@@ -203,6 +203,7 @@ class LoanController extends Controller
                 'fullname' => $loan->user->fullname(),
                 'user' => $loan->user->toArray(),
                 'address' => $loan->user->address,
+                'end_date' => $installment->end_date,
             ];
 
             $pdfInstallment = Pdf::loadView('loan.pdf.installment_note', $data);

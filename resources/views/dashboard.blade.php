@@ -11,9 +11,9 @@
                 <div class="p-6 text-gray-900">
                     <p>Total clientes: {{ $totalClients }}</p>
 
-                    <p> Prestamos totales (cantidad y cuanto es en dinero)<p>
-                    <p> Prestamos activos (cantidad y cuanto es en dinero)<p>
-                    <p> Ganancias (total de intereses) </p>
+                    <p> Prestamos totales: # {{ $totalLoans }} / $ {{ $totalLoansAmount }}<p>
+                    <p> Prestamos activos: # {{ $totalActiveLoans }} / $ {{ $totalActiveLoansAmount }}<p>
+                    <p> Ganancias: $ {{ $earnings }} </p>
                 </div>
             </div>
         </div>

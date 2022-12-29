@@ -16,11 +16,16 @@ class DashboardController extends Controller
      */
     public function index(Request $request)
     {
-        $latestLoans = Loan::latest()->get();
+        $earnings = 0; // Ganancia, total en intereses
+        
         $totalClients = User::where('type', 'client')->count();
+        
         $totalLoans = Loan::count();
-        $totalActiveLoans = Loan::active()->count();
+        $totalActiveLoans = Loan::where('status', 'APPROVED')->count();
 
-        return view('dashboard', compact('latestLoans', 'totalClients', 'totalLoans', 'totalActiveLoans'));
+        $totalLoansAmount = Loan::where('status', 'APPROVED')->sum('amount');
+        $totalActiveLoansAmount = Loan::where('status', 'APPROVED')->sum('amount');
+
+        return view('dashboard', compact('earnings', 'totalClients', 'totalLoans', 'totalActiveLoans', 'totalLoansAmount', 'totalActiveLoansAmount'));
     }
 }

@@ -124,8 +124,15 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td>ANTONIO EMMANUEL FLORES ÁLVAREZ BUYLLA</td>
-                        <td>____________________________________________</td>
+                        <td>
+                            <br><br><br><br>
+                            <p>ANTONIO EMMANUEL FLORES ÁLVAREZ BUYLLA</p>
+                        </td>
+                        <td>
+                        <br>
+                            <br><br><br><br>
+                            <p>____________________________________________</p>
+                        </td>
                     </tr>
                 </tbody>
             </table>
