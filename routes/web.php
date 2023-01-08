@@ -44,12 +44,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/client/{user}', [UserController::class, 'edit'])->name('client.edit');
     Route::patch('/client/{user}', [UserController::class, 'update'])->name('client.update');
     Route::get('/client/{user}/delete', [UserController::class, 'delete'])->name('client.delete');
+    Route::get('/client/{user}/address', [UserController::class, 'editAddress'])->name('client.edit.address');
+    Route::patch('/client/{user}/address', [UserController::class, 'updateAddress'])->name('client.update.address');
+    Route::get('/client/{user}/bank-details', [UserController::class, 'editBankDetails'])->name('client.edit.bankDetails');
+    Route::patch('/client/{user}/bank-details', [UserController::class, 'updateBankDetails'])->name('client.update.bankDetails');
 
     Route::get('/loans', [LoanController::class, 'index'])->name('loan.index');
     Route::get('/loan', [LoanController::class, 'create'])->name('loan.create');
     Route::post('/loan', [LoanController::class, 'store'])->name('loan.store');
     Route::get('/loan/{uuid}', [LoanController::class, 'show'])->name('loan.show');
     Route::get('/loan/{loan}/delete', [LoanController::class, 'destroy'])->name('loan.delete');
+    Route::patch('/loan/{loan}/update', [LoanController::class, 'update'])->name('loan.update');
 
     Route::get('/loan-installment/{id}', [LoanInstallmentController::class, 'show'])->name('loan.installment.show');
     Route::post('/loan-installment/{installment}/payment', [LoanInstallmentController::class, 'storeNotePayment'])->name('loan.installment.storeNotePayment');

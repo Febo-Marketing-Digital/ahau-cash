@@ -25,6 +25,36 @@
                                 <p>DESCARGAR PDF: <a target="_blank" href="{{ $mediaItem->getTemporaryUrl(Carbon\Carbon::now()->addMinutes(10)) }}" download>{{ $mediaItem->getCustomProperty('note_name') ?? $mediaItem->name }}</a></p>
                             @endforeach
                         @endif
+
+                        @if($loan->status === 'PENDING')
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">PENDIENTE DE APROBACIÓN</h5>
+                                <p class="card-text">Este prestamo fue creado por {{ $loan->staff->name . ' ' . $loan->staff->lastname }} y necesita aprobación.</p>
+                                
+                                <div class="container text-center">
+                                    <div class="row align-items-start">
+                                        <div class="col">
+                                            <form method="post" action="{{ route('loan.update', $loan) }}">
+                                                @csrf
+                                                @method('PATCH')
+                                                <input type="hidden" name="status" value="APPROVED">
+                                                <button class="btn btn-success">Aprobar Préstamo</button>
+                                            </form>
+                                        </div>
+                                        <div class="col">
+                                            <form method="post" action="{{ route('loan.update', $loan) }}">
+                                                @csrf
+                                                @method('PATCH')
+                                                <input type="hidden" name="status" value="DECLINED">
+                                                <button class="btn btn-danger">Declinar Préstamo</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
                         
                         <table class="table table-striped">
                             <thead>

@@ -117,7 +117,7 @@ class UserController extends Controller
                 'locality' => $request->locality,
                 'province' => $request->province,
                 'city' => $request->city,
-                'state' => 'N/A',
+                'state' => get_state_by_city($request->city),
                 'postal_code' => $request->postal_code
             ]);
         }
@@ -128,6 +128,44 @@ class UserController extends Controller
     public function delete(User $user)
     {
         $user->delete();
+
+        return redirect(route('client.index'));
+    }
+
+    public function editAddress(User $user)
+    {
+        return view('user.edit_address', compact('user'));
+    }
+
+    public function editBankDetails(User $user)
+    {
+        return view('user.edit_bank_details', compact('user'));
+    }
+
+    public function updateAddress(User $user, Request $request)
+    {
+        $userAddress = UserAddress::where('user_id', $user->id)->first();
+
+        $userAddress->street = $request->street;
+        $userAddress->house_number = $request->house_number;
+        $userAddress->locality = $request->locality;
+        $userAddress->city = $request->city;
+        $userAddress->postal_code = $request->postal_code;
+
+        $userAddress->save();
+
+        return redirect(route('client.index'));
+    }
+
+    public function updateBankDetails(User $user, Request $request)
+    {
+        $bankDetails = UserBankDetail::where('user_id', $user->id)->first();
+
+        $bankDetails->bank_name = $request->bank_name;
+        $bankDetails->account_number = $request->account_number;
+        $bankDetails->clabe = $request->clabe;
+
+        $bankDetails->save();
 
         return redirect(route('client.index'));
     }

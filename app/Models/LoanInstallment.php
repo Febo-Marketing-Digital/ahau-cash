@@ -22,6 +22,11 @@ class LoanInstallment extends Model implements HasMedia
         'paid_at,'
     ];
 
+    protected $dates = [
+        'start_date',
+        'end_date',
+    ];
+
     public function loan(): BelongsTo
     {
         return $this->belongsTo(Loan::class);

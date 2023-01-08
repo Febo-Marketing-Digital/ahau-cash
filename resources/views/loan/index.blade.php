@@ -41,9 +41,11 @@
                                 <tr>
                                     <td>
                                         @if(auth()->user()->type == 'admin' && $loan->status == 'PENDING') 
-                                            <i class="bi bi-circle text-primary"></i> 
+                                            <i class="bi bi-circle-fill text-warning"></i>
+                                        @elseif(auth()->user()->type == 'staff' && $loan->status == 'PENDING') 
+                                            <i class="bi bi-circle-fill text-warning"></i> 
                                         @else
-                                            <i class="bi bi-check-circle text-success"></i> 
+                                            <i class="bi bi-check-circle text-success"></i>
                                         @endif
                                         {{ $loan->user->fullname() }}
                                     </td>

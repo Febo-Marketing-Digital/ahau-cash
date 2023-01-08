@@ -15,7 +15,7 @@
 
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-2xl">
+                <div class="max-w-3xl">
                     <header>
                         <h2 class="text-lg font-medium text-gray-900">Listado de miembros del Staff</h2>
                         <p class="mt-1 text-sm text-gray-600">Listado de todos los usuarios miembros del staff de la plataforma.</p>

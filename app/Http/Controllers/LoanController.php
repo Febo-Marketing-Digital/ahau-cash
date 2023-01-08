@@ -16,9 +16,13 @@ class LoanController extends Controller
 {
     public function index() 
     {
-        return view('loan.index', [
-            'loans' => Loan::with('installments')->latest()->get(),
-        ]);
+        if (auth()->user()->type == 'staff') {
+            $loans = Loan::with('installments')->where('created_by', auth()->user()->id)->latest()->get();
+        } else {
+            $loans = Loan::with('installments')->latest()->get();
+        }
+
+        return view('loan.index', compact('loans'));
     }
 
     public function create(Request $request)
@@ -64,6 +68,7 @@ class LoanController extends Controller
                 'roi' => $request->loan_roi,
                 'installment_period' => $request->installment_period,
                 'status' => auth()->user()->type == 'admin' ? 'APPROVED' : 'PENDING',
+                'created_by' => auth()->user()->id,
             ]);
     
             // se crea la tabla de amortizacion
@@ -120,6 +125,7 @@ class LoanController extends Controller
     public function show(string $uuid) 
     {
         $loan = Loan::where('uuid', $uuid)->firstOrFail();
+
         return view('loan.show', compact('loan'));
     }
 
@@ -127,9 +133,27 @@ class LoanController extends Controller
     {
         if (auth()->user()->type == 'admin') {
             // valida si el prestamo no esta en proceso???
+            
+            $installments = LoanInstallment::where('loan_id', $loan->id)->get();
+            foreach($installments as $installment) {
+                $installment->delete();
+            }
             $loan->delete();
+            
             // ó
             //$loan->deletePreservingMedia(); // all associated files will be preserved 
+        }
+
+        return redirect(route('loan.index'));
+    }
+
+    public function update(Request $request, Loan $loan)
+    {
+        $loan->status = $request->status;
+        $loan->save();
+
+        if ($request->status == 'DECLINED') {
+            // PREGUNTAR QUE HACER A ANTONIO
         }
 
         return redirect(route('loan.index'));

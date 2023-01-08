@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
             'lastname' => 'User',
             'birthdate' => '1977-01-01',
             'gender' => 'M',
-            'email' => 'admnin@example.com',
+            'email' => 'admin@email.com',
             'password' => bcrypt('password'),
             'type' => 'admin',
         ]);

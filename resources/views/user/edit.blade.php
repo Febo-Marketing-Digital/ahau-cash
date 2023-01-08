@@ -13,6 +13,7 @@
                     <header>
                         <h2 class="text-lg font-medium text-gray-900">{{ $user->name }} {{ $user->lastname }}</h2>
                         <p class="mt-1 text-sm text-gray-600">Creado {{ $user->created_at->diffForHumans() }} - Tiene <strong>{{ $user->loans->count() }} prestamos</strong> en su historial.</p>
+                        <p><a href="{{ route('client.index') }}"><i class="bi bi-arrow-left"></i> volver al listado</a></p>
                     </header>
 
                     <form method="post" action="{{ route('client.update', $user) }}" class="mt-6 space-y-6">
@@ -64,7 +65,7 @@
                         @if($user->address)
                             <div>
                                 <p>Dirección: {{ $user->address->completeAddress() }}</p>
-                                <p><a  href="#" onclick="alert('funcion no disponible');">Click acá para cambiar dirección</a></p>
+                                <p><a  href="{{ route('client.edit.address', $user) }}">Click acá para cambiar dirección</a></p>
                             </div>
                         @else
                             @include('user.partials/address-form')
@@ -76,7 +77,7 @@
                         <div>
                             <p>Beneficiario: {{ $user->bankDetails->first()->name }} {{ $user->bankDetails->first()->lastname }}</p>
                             <p>Banco y # de cuenta:{{ $user->bankDetails->first()->banl_name }} {{ $user->bankDetails->first()->account_number }}</p>
-                            <p><a href="#" onclick="alert('funcion no disponible');">Click acá para cambiar datos bancarios</a></p>
+                            <p><a href="{{ route('client.edit.bankDetails', $user) }}">Click acá para cambiar datos bancarios</a></p>
                         </div>
                         @else
 
@@ -95,7 +96,16 @@
 
                         <div>
                             <x-input-label for="bank_name" :value="__('Bank name')" />
-                            <x-text-input id="bank_name" name="bank_name" type="text" class="mt-1 block w-full"  />
+                            {{-- <x-text-input id="bank_name" name="bank_name" type="text" class="mt-1 block w-full"  /> --}}
+                            <select name="bank_name" id="bank_name">
+                                <option value="" selected>Selecciona a un banco</option>
+                                <option value="Banco Azteca">Banco Azteca</option>
+                                <option value="Banamex">Banamex</option>
+                                <option value="Banorte">Banorte</option>
+                                <option value="BBVA">BBVA</option>
+                                <option value="HSBC">HSBC</option>
+                                <option value="ScotiaBank">ScotiaBank</option>
+                            </select>
                             <x-input-error class="mt-2" :messages="$errors->get('bank_name')" />
                         </div>
 
