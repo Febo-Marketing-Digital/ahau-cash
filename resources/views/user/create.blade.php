@@ -99,8 +99,6 @@
                             <select name="city" id="city">
                                 <option value="CDMX" selected>Ciudad de México</option>
                                 <option value="EDOMX">Estado de México</option>
-                                <option value="TOL">Toluca</option>
-                                <option value="CUE">Cuernavaca</option>
                             </select>
                         </div>
 

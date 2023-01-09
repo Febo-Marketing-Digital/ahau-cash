@@ -37,6 +37,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/staff', [StaffController::class, 'create'])->name('staff.create');
     Route::post('/staff', [StaffController::class, 'store'])->name('staff.store');
     Route::get('/staff/{user}', [StaffController::class, 'show'])->name('staff.show');
+    Route::put('/staff/{user}/update', [StaffController::class, 'update'])->name('staff.update');
+    Route::get('/staff/{user}/delete', [StaffController::class, 'delete'])->name('staff.delete');
 
     Route::get('/clients', [UserController::class, 'index'])->name('client.index');
     Route::get('/client', [UserController::class, 'create'])->name('client.create');
@@ -55,6 +57,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/loan/{uuid}', [LoanController::class, 'show'])->name('loan.show');
     Route::get('/loan/{loan}/delete', [LoanController::class, 'destroy'])->name('loan.delete');
     Route::patch('/loan/{loan}/update', [LoanController::class, 'update'])->name('loan.update');
+    Route::post('/loan/{loan}/settled', [LoanController::class, 'settled'])->name('loan.settled');
 
     Route::get('/loan-installment/{id}', [LoanInstallmentController::class, 'show'])->name('loan.installment.show');
     Route::post('/loan-installment/{installment}/payment', [LoanInstallmentController::class, 'storeNotePayment'])->name('loan.installment.storeNotePayment');

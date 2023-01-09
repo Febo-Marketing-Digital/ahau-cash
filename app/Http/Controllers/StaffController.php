@@ -48,4 +48,35 @@ class StaffController extends Controller
     {
         return view('staff.show', compact('user'));
     }
+
+    public function update(Request $request, User $user)
+    {
+        $request->validate([
+            'name' => ['string', 'max:255'],
+            'lastname' => ['string', 'max:255'],
+            'email' => ['email', \Illuminate\Validation\Rule::unique('users')->ignore($user->id)],
+        ]);
+
+        if (! empty($request->password)) {
+            $request->validate([
+                'password' => [Rules\Password::defaults()],
+            ]);
+            $user->password = Hash::make($request->password);
+        }
+
+        $user->name = $request->name ?? $user->name;
+        $user->lastname = $request->lastname ?? $user->name;
+        $user->email = $request->email ?? $user->name;
+
+        $user->save();
+
+        return redirect(route('staff.index'));
+    }
+
+    public function delete(User $user)
+    {
+        $user->delete();
+
+        return redirect(route('staff.index'));
+    }
 }

@@ -16,17 +16,32 @@
                     </header>
 
                     <div class="mt-6 space-y-6">
-                        <p>Préstamo solicitado: {{ $loan->formattedAmount() }}</p>
-                        <p>Cantidad de devolver: {{ $loan->amountToReturn() }} ({{ $loan->roi }} %)</p>
-                        @if($loan->hasMedia('notes'))
-                            @php($mediaItems = $loan->getMedia('notes'))
 
-                            @foreach($mediaItems as $mediaItem)
-                                <p>DESCARGAR PDF: <a target="_blank" href="{{ $mediaItem->getTemporaryUrl(Carbon\Carbon::now()->addMinutes(10)) }}" download>{{ $mediaItem->getCustomProperty('note_name') ?? $mediaItem->name }}</a></p>
-                            @endforeach
-                        @endif
+                        <div class="container">
+                            <div class="row align-items-start">
+                                <div class="col">
+                                    <p>Préstamo solicitado: {{ $loan->formattedAmount() }}</p>
+                                    <p>Cantidad de devolver: {{ $loan->amountToReturn() }} ({{ $loan->roi }} %)</p>
+                                </div>
+                                <div class="col">
+                                    @if($loan->hasMedia('notes'))
+                                        @php($mediaItems = $loan->getMedia('notes'))
 
-                        @if($loan->status === 'PENDING')
+                                        @foreach($mediaItems as $mediaItem)
+                                            <p>DESCARGAR PDF: <a target="_blank" href="{{ $mediaItem->getTemporaryUrl(Carbon\Carbon::now()->addMinutes(10)) }}" download>{{ $mediaItem->getCustomProperty('note_name') ?? $mediaItem->name }}</a></p>
+                                        @endforeach
+                                    @endif
+                                </div>
+                                <div class="col">
+                                    <form method="post" action="{{ route('loan.settled', $loan) }}">
+                                        @csrf
+                                        <button class="btn btn-primary"><i class="bi bi-bookmark-check"></i> Liquidar Préstamo</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        @if($loan->status === 'PENDING' && auth()->user()->type == 'admin')
                         <div class="card">
                             <div class="card-body">
                                 <h5 class="card-title">PENDIENTE DE APROBACIÓN</h5>
@@ -73,7 +88,7 @@
                                 @if($installment->hasMedia('notes'))
                                     @php($mediaItems = $installment->getMedia('notes'))
                                 @endif
-                                <tr>
+                                <tr @if(! is_null($installment->paid_at)) style="background-color: #7ec17e; color: white;" @endif>
                                     <td>{{ $key + 1 }}</td>
                                     <td>{{ $installment->start_date }}</td>
                                     <td>{{ $installment->end_date }}</td>

@@ -52,42 +52,34 @@ class Loan extends Model implements HasMedia
 
     public function loanPaymentStatus(): array
     {
-        $paymentStatus = 'UNKNOWN';
-
-        $firstInstallment = $this->installments()->first();
-        // $daysFromStart = $firstInstallment->start_date->diffInDays(now());
-
-        // revisar si el credito ya comenzo, usando la fecha del primer installment y comparando con la fecha actual
-        $check = now()->between($firstInstallment->start_date, $firstInstallment->end_date);
-
-        // el primer pagare esta en el rango, revisar si ya comenzo
-        if ($check) {
-            if ($firstInstallment->start_date < now()) {
-                $paymentStatus = 'PENDING_TO_START';
-            }
-        } else {
-            // si no esta en el rango porque ya comenzzo..
-            $paymentStatus = 'CURRENT_LOAN';
-            // buscar en que installment va para los siguientes calculos
-            //$currentInstallment = $this->installments->nosequeonda
-
-            // una vez ubicado, ver si esta al corriente (el installment previo fue pagado)
-            //$paymentStatus = 'CURRENT_LOAN';
-
-            // si esta al corriente pero esta en los ultimos 5 dias proximos a pagar
-            //$paymentStatus = 'CLOSE_TO_PAYMENT';
-
-            // si no esta al corriente marcar como vencido
-            //$paymentStatus = 'PAST_DUE';
+        if ($this->status == 'SETTLED') {
+            return render_payment_status_label('SETTLED');
         }
 
-        return match($paymentStatus) {
-            'CURRENT_LOAN' => ['AL CORRIENTE', 'success'],
-            'CLOSE_TO_PAYMENT' => ['LIMITE CERCANO', 'warning'],
-            'PAST_DUE' => ['EN MORA', 'danger'],
-            'PENDING_TO_START' => ['POR INICIAR', 'dark'],
-            'UNKNOWN' => ['NO ESTATUS', 'dark'],
-        };
+        $firstInstallment = $this->installments()->first();
+
+        $nowMonth = now()->format('m');
+        $firstInstallmentStartMonth = $firstInstallment->start_date->format('m');
+        $firstInstallmentEndMonth = $firstInstallment->end_date->format('m');
+
+        if ($nowMonth === $firstInstallmentStartMonth or $nowMonth === $firstInstallmentEndMonth) {
+            if (now()->greaterThan($firstInstallment->start_date)) {
+                return render_payment_status_label('CURRENT_LOAN');
+            } else {
+                return render_payment_status_label('PENDING_TO_START');
+            }     
+        } else {
+            $lastPaidInstallment = $this->installments()->whereNotNull('paid_at')->orderBy('start_date', 'DESC')->first();
+            if ($lastPaidInstallment && $lastPaidInstallment->end_date->lessThan(now())) {
+                return render_payment_status_label('PAST_DUE');
+            } elseif ($lastPaidInstallment && $lastPaidInstallment->end_date->diff(now()) <= 10) {
+                return render_payment_status_label('CLOSE_TO_PAYMENT');
+            } else {
+                return render_payment_status_label('PAST_DUE');
+            }
+        }
+
+        return render_payment_status_label('UNKNOWN');
     }
 
     public function installments(): HasMany

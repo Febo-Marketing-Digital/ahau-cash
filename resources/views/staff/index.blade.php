@@ -41,6 +41,7 @@
                                     <td>{{ now() }}</td>
                                     <td>
                                         <a class="btn btn-dark" title="Ver o editar detalles" href="{{ route('staff.show', $user) }}"><i class="bi bi-person-fill-exclamation"></i></a>
+                                        <a class="btn btn-danger" title="Eliminar staff" href="{{ route('staff.delete', $user) }}" onclick="confirm('Seguro que desea eliminar este registro?');"><i class="bi bi-trash3"></i></a>
                                     </td>
                                 </tr>
                                 @endforeach

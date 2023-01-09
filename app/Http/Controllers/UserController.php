@@ -15,7 +15,7 @@ class UserController extends Controller
     public function index()
     {
         return view('user.index', [
-            'clients' => User::where('type', '=', 'client')->latest()->get(),
+            'clients' => User::where('type', '=', 'client')->latest()->paginate(25),
         ]);
     }
 
@@ -63,7 +63,7 @@ class UserController extends Controller
                 'locality' => $request->locality,
                 'province' => $request->province,
                 'city' => $request->city,
-                'state' => 'N/A', //$request->state,
+                'state' => $request->city == 'CMDX' ? 'Ciudad de México' : 'México',
                 'postal_code' => $request->postal_code
             ]);
 
@@ -93,6 +93,13 @@ class UserController extends Controller
         $user->birthdate = $request->birthdate;
 
         $user->save();
+
+        $currentPhone = $user->phonenumbers->first();
+        if (! empty($request->phonenumber) && $currentPhone->phonenumber <> $request->phonenumber) {
+            $userPhoneNumber = UserPhonenumber::where('phonenumber', $currentPhone->phonenumber)->first();
+            $userPhoneNumber->phonenumber = $request->phonenumber;
+            $userPhoneNumber->save();
+        }
 
         $bankDetails = UserBankDetail::where('user_id', $user->id)->first();
 

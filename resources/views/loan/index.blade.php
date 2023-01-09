@@ -62,6 +62,13 @@
                                 </tr>
                                 @endforeach
                             </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th colspan="8">
+                                        {{ $loans->links() }}
+                                    </th>
+                                </tr>
+                            </tfoot>
                         </table>
                     </div>
 

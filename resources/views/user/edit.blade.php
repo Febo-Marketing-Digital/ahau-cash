@@ -57,7 +57,7 @@
                         <div>
                             @php($phoneNumber = $user->phonenumbers->first())
                             <x-input-label for="phonenumber" :value="__('Phonenumber')" />
-                            <x-text-input id="phonenumber" name="phonenumber" type="text" class="mt-1 block w-full" value="{{ $phoneNumber->phonenumber }}" disabled />
+                            <x-text-input id="phonenumber" name="phonenumber" type="text" class="mt-1 block w-full" value="{{ $phoneNumber->phonenumber }}" />
                         </div>
 
                         <h3>Datos de domicilio</h3>

@@ -17,9 +17,9 @@ class LoanController extends Controller
     public function index() 
     {
         if (auth()->user()->type == 'staff') {
-            $loans = Loan::with('installments')->where('created_by', auth()->user()->id)->latest()->get();
+            $loans = Loan::with('installments')->where('created_by', auth()->user()->id)->latest()->paginate(25);
         } else {
-            $loans = Loan::with('installments')->latest()->get();
+            $loans = Loan::with('installments')->latest()->paginate(25);
         }
 
         return view('loan.index', compact('loans'));
@@ -124,6 +124,8 @@ class LoanController extends Controller
 
     public function show(string $uuid) 
     {
+        setlocale(LC_TIME, 'es_ES');
+        
         $loan = Loan::where('uuid', $uuid)->firstOrFail();
 
         return view('loan.show', compact('loan'));
@@ -153,7 +155,17 @@ class LoanController extends Controller
         $loan->save();
 
         if ($request->status == 'DECLINED') {
-            // PREGUNTAR QUE HACER A ANTONIO
+            $this->destroy($loan);
+        }
+
+        return redirect(route('loan.index'));
+    }
+
+    public function settled(Loan $loan)
+    {
+        if (auth()->user()->type == 'admin') {
+            $loan->status = 'SETTLED';
+            $loan->save();
         }
 
         return redirect(route('loan.index'));
@@ -192,6 +204,7 @@ class LoanController extends Controller
             'user' => $loan->user->toArray(),
             'address' => $loan->user->address,
             'created_date' => now()->format('d M Y'), // change this
+            'year_to_convert' => now()->format('Y'),
         ];
     
         $pdf = Pdf::loadView('loan.pdf.loan_note', $data);
@@ -209,6 +222,8 @@ class LoanController extends Controller
             'fullname' => $loan->user->fullname(),
             'user' => $loan->user->toArray(),
             'address' => $loan->user->address,
+            'created_date' => now()->format('d M Y'), // change this
+            'year_to_convert' => now()->format('Y'),
         ];
 
         $pdf = Pdf::loadView('loan.pdf.interest_note', $data);

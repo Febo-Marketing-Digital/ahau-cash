@@ -14,3 +14,17 @@ if (! function_exists('get_state_by_city')) {
         return 'Ciudad de México';
     }
 }
+
+if (! function_exists('render_payment_status_label')) {
+    function render_payment_status_label(string $paymentStatus)
+    {
+        return match($paymentStatus) {
+            'CURRENT_LOAN' => ['AL CORRIENTE', 'success'],
+            'CLOSE_TO_PAYMENT' => ['LIMITE CERCANO', 'warning'],
+            'PAST_DUE' => ['EN MORA', 'danger'],
+            'PENDING_TO_START' => ['POR INICIAR', 'dark'],
+            'UNKNOWN' => ['NO ESTATUS', 'dark'],
+            'SETTLED' => ['LIQUIDADO', 'primary'],
+        };
+    }
+}
