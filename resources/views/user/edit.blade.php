@@ -75,8 +75,8 @@
 
                         @if($user->bankDetails)
                         <div>
-                            <p>Beneficiario: {{ $user->bankDetails->first()->name }} {{ $user->bankDetails->first()->lastname }}</p>
-                            <p>Banco y # de cuenta:{{ $user->bankDetails->first()->banl_name }} {{ $user->bankDetails->first()->account_number }}</p>
+                            <p>Beneficiario: {{ $user->bankDetails->name }} {{ $user->bankDetails->lastname }}</p>
+                            <p>Banco y Nº de cuenta: <strong>{{ $user->bankDetails->bank_name }}</strong> - <strong>{{ $user->bankDetails->account_number }}</strong></p>
                             <p><a href="{{ route('client.edit.bankDetails', $user) }}">Click acá para cambiar datos bancarios</a></p>
                         </div>
                         @else
@@ -96,7 +96,6 @@
 
                         <div>
                             <x-input-label for="bank_name" :value="__('Bank name')" />
-                            {{-- <x-text-input id="bank_name" name="bank_name" type="text" class="mt-1 block w-full"  /> --}}
                             <select name="bank_name" id="bank_name">
                                 <option value="" selected>Selecciona a un banco</option>
                                 <option value="Banco Azteca">Banco Azteca</option>
@@ -105,6 +104,7 @@
                                 <option value="BBVA">BBVA</option>
                                 <option value="HSBC">HSBC</option>
                                 <option value="ScotiaBank">ScotiaBank</option>
+                                <option value="BanCoppel">BanCoppel</option>
                             </select>
                             <x-input-error class="mt-2" :messages="$errors->get('bank_name')" />
                         </div>
