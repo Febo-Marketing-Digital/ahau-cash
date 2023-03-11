@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -47,7 +48,24 @@ class Loan extends Model implements HasMedia
 
         $fmt = new NumberFormatter('es_MX', NumberFormatter::CURRENCY);
         return $fmt->formatCurrency($total, "MXN");
-        
+
+    }
+
+    public function getMediaLink(): string
+    {
+        if ($this->hasMedia('notes')) {
+            $mediaItems = $this->getMedia('notes');
+            $renderText = '';
+            foreach($mediaItems as $mediaItem) {
+                $linkText = $mediaItem->getCustomProperty('note_name') ?? $mediaItem->name;
+                $linkUrl = app()->environment('local') ? '' : $mediaItem->getTemporaryUrl(Carbon::now()->addMinutes(10));
+                $renderText .= '<p>DESCARGAR PDF: <a target="_blank" href=' . $linkUrl . ' download>' . $linkText . '</a></p>';
+            }
+
+            return $renderText;
+        }
+
+        return '';
     }
 
     public function loanPaymentStatus(): array
@@ -67,7 +85,7 @@ class Loan extends Model implements HasMedia
                 return render_payment_status_label('CURRENT_LOAN');
             } else {
                 return render_payment_status_label('PENDING_TO_START');
-            }     
+            }
         } else {
             $lastPaidInstallment = $this->installments()->whereNotNull('paid_at')->orderBy('start_date', 'DESC')->first();
             if ($lastPaidInstallment && $lastPaidInstallment->end_date->lessThan(now())) {

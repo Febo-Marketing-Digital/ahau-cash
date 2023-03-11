@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -26,6 +27,17 @@ class LoanInstallment extends Model implements HasMedia
         'start_date',
         'end_date',
     ];
+
+    public function getMediaLink(): string
+    {
+        if ($this->hasMedia('notes')) {
+            $mediaItems = $this->getMedia('notes');
+            $linkUrl = app()->environment('local') ? '' : $mediaItems[0]->getTemporaryUrl(Carbon::now()->addMinutes(10));
+            return '<a class="btn btn-dark" target="_blank" title="descargar PDF" href="' . $linkUrl . '" download><i class="bi bi-arrow-down-square"></i></a>';
+        } else {
+            return 'N/A';
+        }
+    }
 
     public function loan(): BelongsTo
     {

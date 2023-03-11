@@ -1,3 +1,11 @@
+<?php
+
+$spaMonths = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+$today = \Carbon\Carbon::now();
+$spaMonth = $spaMonths[($today->format('n')) - 1];
+$localizedDate = $today->format('d') . ' días del mes de ' . $spaMonth . ' de ' . $today->format('Y');
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,9 +19,9 @@
     <div style="margin: 0 auto; text-align: center;">
         <div class="main" style="text-align: justify; max-width: 800px;">
             <p>
-                CONVENIO QUE CELEBRAN POR UNA PARTE ANTONIO EMMANUEL FLORES ÁLVAREZ BUYLLA, 
-                A QUIEN EN LO SUCESIVO SE LE DENOMINARÁ "EL PRESTAMISTA" Y POR OTRA PARTE <strong>{{ strtoupper($client_fullname) }}</strong>, 
-                A QUIEN EN LO SUCESIVO SE LE DENOMINARÁ "EL PRESTATARIO"; 
+                CONVENIO QUE CELEBRAN POR UNA PARTE ANTONIO EMMANUEL FLORES ÁLVAREZ BUYLLA,
+                A QUIEN EN LO SUCESIVO SE LE DENOMINARÁ "EL PRESTAMISTA" Y POR OTRA PARTE <strong>{{ strtoupper($client_fullname) }}</strong>,
+                A QUIEN EN LO SUCESIVO SE LE DENOMINARÁ "EL PRESTATARIO";
                 SIENDO QUE EN SU CONJUNTO SE LES DENOMINARÁ "LAS PARTES", QUIENES SE SUJETAN AL TENOR DE LAS SIGUIENTES DECLARACIONES Y CLÁUSULAS:
             </p>
 
@@ -83,8 +91,8 @@
 
 
             <strong>"LAS PARTES"</strong> convienen que el comprobante de la transferencia o depósito bancario fungirá como comprobante del cumplimiento de la obligación de pago referida en la presente cláusula.</p>
-            
-            
+
+
             <p><strong>TERCERA.</strong> NATURALEZA CIVIL DEL CONTRATO. <strong>"LAS PARTES"</strong> convienen que el destino de los recursos económicos que constituyen el objeto del presente convenio no serán utilizados para actos de comercio, por lo que, la naturaleza del presente contrato es civil y que está regulado por las disposiciones contenidas en el Código Civil para el Distrito Federal, ahora Ciudad de México, en ese sentido, entre “EL PRESTAMISTA” y “EL PRESTATARIO” no hay una relación mercantil, laboral o du cualquier tipo, ni existe subordinación alguna entre ellos.</p>
             <p><strong>CUARTA.</strong> MODIFICACIONES. <strong>"LAS PARTES"</strong> convienen que cualquier modificación al presente contrato debe constar por escrito y estar firmado por <strong>"LAS PARTES"</strong>.</p>
             <p><strong>QUINTA.</strong> VIGENCIA. La vigencia del presente convenio es indeterminada.</p>
@@ -112,7 +120,7 @@
 
             <p><strong>DÉCIMA.</strong> JURISDICCIÓN Y COMPETENCIA. Para la interpretación y cumplimiento del presente contrato, así como, para todo lo no previsto en el mismo, las partes se someten a la jurisdicción de los tribunales y las leyes aplicables en la Ciudad de México, por lo que, renuncian al fuero que por razón de su domicilio presente o futuro pudiera corresponderles.</p>
 
-            <p>Enteradas las partes del contenido y alcance legal del presente contrato, el cual entienden y manifiestan su conformidad con este, firmando por duplicado en la Ciudad de México, a los {{ now()->format('d') }} días del mes de {{ now()->format('F') }} de {{ now()->format('Y') }}.</p>
+            <p>Enteradas las partes del contenido y alcance legal del presente contrato, el cual entienden y manifiestan su conformidad con este, firmando por duplicado en la Ciudad de México, a los {{ $localizedDate }}.</p>
 
 
             <table style="width: 100%; height: 400px; text-align: center;">
