@@ -24,13 +24,7 @@
                                     <p>Cantidad de devolver: {{ $loan->amountToReturn() }} ({{ $loan->roi }} %)</p>
                                 </div>
                                 <div class="col">
-                                    @if($loan->hasMedia('notes'))
-                                        @php($mediaItems = $loan->getMedia('notes'))
-
-                                        @foreach($mediaItems as $mediaItem)
-                                            <p>DESCARGAR PDF: <a target="_blank" href="{{ $mediaItem->getTemporaryUrl(Carbon\Carbon::now()->addMinutes(10)) }}" download>{{ $mediaItem->getCustomProperty('note_name') ?? $mediaItem->name }}</a></p>
-                                        @endforeach
-                                    @endif
+                                    {!!   $loan->getMediaLink() !!}
                                 </div>
                                 <div class="col">
                                     <form method="post" action="{{ route('loan.settled', $loan) }}">
@@ -46,7 +40,7 @@
                             <div class="card-body">
                                 <h5 class="card-title">PENDIENTE DE APROBACIÓN</h5>
                                 <p class="card-text">Este prestamo fue creado por {{ $loan->staff->name . ' ' . $loan->staff->lastname }} y necesita aprobación.</p>
-                                
+
                                 <div class="container text-center">
                                     <div class="row align-items-start">
                                         <div class="col">
@@ -70,7 +64,7 @@
                             </div>
                         </div>
                         @endif
-                        
+
                         <table class="table table-striped">
                             <thead>
                                 <tr>
@@ -85,9 +79,6 @@
                             </thead>
                             <tbody>
                                 @foreach($loan->installments as $key => $installment)
-                                @if($installment->hasMedia('notes'))
-                                    @php($mediaItems = $installment->getMedia('notes'))
-                                @endif
                                 <tr @if(! is_null($installment->paid_at)) style="background-color: #7ec17e; color: white;" @endif>
                                     <td>{{ $key + 1 }}</td>
                                     <td>{{ $installment->start_date }}</td>
@@ -95,13 +86,7 @@
                                     <td>{{ $installment->amount }}</td>
                                     <td>{{ $installment->balance }}</td>
                                     <td>
-                                        @if($mediaItems)
-                                        <a class="btn btn-dark" target="_blank" title="descargar PDF" href="{{ $mediaItems[0]->getTemporaryUrl(Carbon\Carbon::now()->addMinutes(10)) }}" download>
-                                            <i class="bi bi-arrow-down-square"></i>
-                                        </a>
-                                        @else
-                                        N/A
-                                        @endif
+                                        {!! $installment->getMediaLink() !!}
                                     </td>
                                     <td>
                                         <a class="btn btn-dark" title="detalles del pagaré" href="{{ route('loan.installment.show', $installment->id) }}">
