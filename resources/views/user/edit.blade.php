@@ -101,10 +101,12 @@
                                 <option value="Banco Azteca">Banco Azteca</option>
                                 <option value="Banamex">Banamex</option>
                                 <option value="Banorte">Banorte</option>
+                                <option value="BanCoppel">BanCoppel</option>
                                 <option value="BBVA">BBVA</option>
+                                <option value="Compartamos">Compartamos</option>
                                 <option value="HSBC">HSBC</option>
                                 <option value="ScotiaBank">ScotiaBank</option>
-                                <option value="BanCoppel">BanCoppel</option>
+                                
                             </select>
                             <x-input-error class="mt-2" :messages="$errors->get('bank_name')" />
                         </div>
