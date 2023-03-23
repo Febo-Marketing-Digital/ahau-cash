@@ -81,7 +81,21 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
-        return view('user.edit', compact('user'));
+        $banks = [
+            "Banco Afirme" => "Banco Afirme",
+            "Banco Azteca" => "Banco Azteca",
+            "Banamex" => "Banamex",
+            "Banorte" => "Banorte",
+            "BanCoppel" => "BanCoppel",
+            "BBVA" => "BBVA",
+            "Compartamos" => "Compartamos",
+            "HSBC" => "HSBC",
+            "ScotiaBank" => "ScotiaBank",
+        ];
+
+        asort($banks);
+
+        return view('user.edit', compact('user', 'banks'));
     }
 
     public function update(User $user, Request $request)
