@@ -98,15 +98,9 @@
                             <x-input-label for="bank_name" :value="__('Bank name')" />
                             <select name="bank_name" id="bank_name">
                                 <option value="" selected>Selecciona a un banco</option>
-                                <option value="Banco Azteca">Banco Azteca</option>
-                                <option value="Banamex">Banamex</option>
-                                <option value="Banorte">Banorte</option>
-                                <option value="BanCoppel">BanCoppel</option>
-                                <option value="BBVA">BBVA</option>
-                                <option value="Compartamos">Compartamos</option>
-                                <option value="HSBC">HSBC</option>
-                                <option value="ScotiaBank">ScotiaBank</option>
-                                
+                                @foreach($banks as $key => $bank)
+                                    <option value="{{ $key }}">{{ $bank }}</option>
+                                @endforeach
                             </select>
                             <x-input-error class="mt-2" :messages="$errors->get('bank_name')" />
                         </div>
