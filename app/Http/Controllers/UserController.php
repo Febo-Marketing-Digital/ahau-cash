@@ -90,6 +90,7 @@ class UserController extends Controller
             "BBVA" => "BBVA",
             "Compartamos" => "Compartamos",
             "HSBC" => "HSBC",
+            "Santander" => "Santander",
             "ScotiaBank" => "ScotiaBank",
         ];
 
