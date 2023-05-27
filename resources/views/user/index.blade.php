@@ -12,11 +12,11 @@
                 Nuevo cliente
             </a>
         </div>
-    
+
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
                 <div class="max-w-3xl">
-                
+
                     <header>
                         <h2 class="text-lg font-medium text-gray-900">Listado de clientes</h2>
                         <p class="mt-1 text-sm text-gray-600">Listado de todos los clientes registrados con o sin creditos activos.</p>
@@ -34,11 +34,11 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($clients as $client)           
+                                @foreach($clients as $client)
                                 <tr>
                                     <td>{{ $client->name }} {{ $client->lastname }}</td>
                                     <td>{{ $client->email }}</td>
-                                    <td>{{ $client->phonenumbers->first()->phonenumber }}</td>
+                                    <td>{{ $client->phonenumbers->first()?->phonenumber }}</td>
                                     <td>{{ $client->created_at->diffForHumans() }}</td>
                                     <td>
                                         <a class="btn btn-dark" title="Ver o editar detalles" href="{{ route('client.edit', $client) }}"><i class="bi bi-person-fill-exclamation"></i></a>

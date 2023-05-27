@@ -27,6 +27,11 @@ class Loan extends Model implements HasMedia
         'status',
         'installment_period',
         'created_by',
+        'start_date',
+    ];
+
+    public $dates = [
+        'start_date',
     ];
 
     public function scopeActive($query)

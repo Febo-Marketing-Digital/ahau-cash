@@ -14,12 +14,12 @@ use Illuminate\Support\Str;
 
 class LoanController extends Controller
 {
-    public function index() 
+    public function index()
     {
         if (auth()->user()->type == 'staff') {
             $loans = Loan::with('installments')->where('created_by', auth()->user()->id)->latest()->paginate(25);
         } else {
-            $loans = Loan::with('installments')->latest()->paginate(25);
+            $loans = Loan::with('installments')->orderBy('start_date')->paginate(25);
         }
 
         return view('loan.index', compact('loans'));
@@ -69,8 +69,9 @@ class LoanController extends Controller
                 'installment_period' => $request->installment_period,
                 'status' => auth()->user()->type == 'admin' ? 'APPROVED' : 'PENDING',
                 'created_by' => auth()->user()->id,
+                'start_date' => $request->start_date ?? now(),
             ]);
-    
+
             // se crea la tabla de amortizacion
             $amount = $request->amount;
             $percentage = ($request->loan_roi / 100) * $amount;
@@ -107,7 +108,7 @@ class LoanController extends Controller
                 ]);
 
                 $installments[] = $installment;
-            }   
+            }
 
             // se crea el PDF
             $this->generatePdfs($loan, $installments);
@@ -115,17 +116,17 @@ class LoanController extends Controller
             DB::commit();
 
             return redirect(route('loan.index'));
-            
+
         } catch (Exception $e) {
             dump($e->getMessage());
             DB::rollBack();
         }
     }
 
-    public function show(string $uuid) 
+    public function show(string $uuid)
     {
         setlocale(LC_TIME, 'es_ES');
-        
+
         $loan = Loan::where('uuid', $uuid)->firstOrFail();
 
         return view('loan.show', compact('loan'));
@@ -135,15 +136,15 @@ class LoanController extends Controller
     {
         if (auth()->user()->type == 'admin') {
             // valida si el prestamo no esta en proceso???
-            
+
             $installments = LoanInstallment::where('loan_id', $loan->id)->get();
             foreach($installments as $installment) {
                 $installment->delete();
             }
             $loan->delete();
-            
+
             // ó
-            //$loan->deletePreservingMedia(); // all associated files will be preserved 
+            //$loan->deletePreservingMedia(); // all associated files will be preserved
         }
 
         return redirect(route('loan.index'));
@@ -206,7 +207,7 @@ class LoanController extends Controller
             'created_date' => now()->format('d M Y'), // change this
             'year_to_convert' => now()->format('Y'),
         ];
-    
+
         $pdf = Pdf::loadView('loan.pdf.loan_note', $data);
         $pdf->save(storage_path('loans/'.$loan->uuid . "-total.pdf"));
 

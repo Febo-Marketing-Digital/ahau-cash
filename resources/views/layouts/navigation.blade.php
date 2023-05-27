@@ -50,6 +50,9 @@
                         <x-dropdown-link :href="route('staff.index')">
                             {{ __('Staff') }}
                         </x-dropdown-link>
+                        <x-dropdown-link :href="route('bank.index')">
+                            {{ __('Banks') }}
+                        </x-dropdown-link>
                         @endif
 
                         <!-- Authentication -->
@@ -102,6 +105,9 @@
                 <x-responsive-nav-link :href="route('staff.index')">
                     {{ __('Staff') }}
                 </x-response-nav-link>
+                    <x-responsive-nav-link :href="route('bank.index')">
+                        {{ __('Banks') }}
+                    </x-response-nav-link>
                 @endif
 
                 <!-- Authentication -->

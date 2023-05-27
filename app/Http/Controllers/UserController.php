@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Bank;
 use App\Models\User;
 use App\Models\UserAddress;
 use App\Models\UserBankDetail;
@@ -14,9 +15,14 @@ class UserController extends Controller
 {
     public function index()
     {
-        return view('user.index', [
-            'clients' => User::where('type', '=', 'client')->latest()->paginate(25),
-        ]);
+        $clients = User::with('phonenumbers')
+            ->where('type', '=', 'client')
+            ->orderBy('id')->paginate(25);
+
+        $sortedResult = $clients->getCollection()->sortBy('name')->values();
+        $clients->setCollection($sortedResult);
+
+        return view('user.index', compact('clients'));
     }
 
     public function create()
@@ -36,7 +42,7 @@ class UserController extends Controller
 
         try {
             DB::beginTransaction();
-            
+
             $user = User::create([
                 'name' => $request->name,
                 'lastname' => $request->lastname,
@@ -81,20 +87,8 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
-        $banks = [
-            "Banco Afirme" => "Banco Afirme",
-            "Banco Azteca" => "Banco Azteca",
-            "Banamex" => "Banamex",
-            "Banorte" => "Banorte",
-            "BanCoppel" => "BanCoppel",
-            "BBVA" => "BBVA",
-            "Compartamos" => "Compartamos",
-            "HSBC" => "HSBC",
-            "Santander" => "Santander",
-            "ScotiaBank" => "ScotiaBank",
-        ];
-
-        asort($banks);
+        $activeBanks = Bank::where('is_active', 1)->get();
+        $banks = $activeBanks->sortBy('display_name');
 
         return view('user.edit', compact('user', 'banks'));
     }
@@ -119,11 +113,13 @@ class UserController extends Controller
         $bankDetails = UserBankDetail::where('user_id', $user->id)->first();
 
         if (! $bankDetails) {
+            $bank = Bank::where('code', $request->bank_name)->first();
+
             UserBankDetail::create([
                 'user_id' => $user->id,
                 'name' => $request->account_owner_name,
                 'lastname' => $request->account_owner_lastname,
-                'bank_name' => $request->bank_name,
+                'bank_name' => $bank->display_name,
                 'account_number' => $request->account_number,
                 'clabe' => $request->clabe,
             ]);
@@ -161,7 +157,10 @@ class UserController extends Controller
 
     public function editBankDetails(User $user)
     {
-        return view('user.edit_bank_details', compact('user'));
+        $activeBanks = Bank::where('is_active', 1)->get();
+        $banks = $activeBanks->sortBy('display_name');
+
+        return view('user.edit_bank_details', compact('user', 'banks'));
     }
 
     public function updateAddress(User $user, Request $request)
@@ -183,7 +182,9 @@ class UserController extends Controller
     {
         $bankDetails = UserBankDetail::where('user_id', $user->id)->first();
 
-        $bankDetails->bank_name = $request->bank_name;
+        $bank = Bank::where('code', $request->bank_name)->first();
+
+        $bankDetails->bank_name = $bank->display_name;
         $bankDetails->account_number = $request->account_number;
         $bankDetails->clabe = $request->clabe;
 
