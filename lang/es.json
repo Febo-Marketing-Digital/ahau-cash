@@ -33,5 +33,7 @@
     "House Number": "Número exterior",
     "Locality": "Colonia, Fraccionamiento o Barrio",
     "Province": "Alcaldía o Municipio",
-    "City": "Ciudad"
+    "City": "Ciudad",
+    "Bank": "Banco",
+    "Banks": "Bancos"
 }
