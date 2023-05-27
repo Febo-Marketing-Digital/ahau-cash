@@ -85,8 +85,9 @@ class Loan extends Model implements HasMedia
         $firstInstallmentStartMonth = $firstInstallment->start_date->format('m');
         $firstInstallmentEndMonth = $firstInstallment->end_date->format('m');
 
-        if ($nowMonth === $firstInstallmentStartMonth or $nowMonth === $firstInstallmentEndMonth) {
-            if (now()->greaterThan($firstInstallment->start_date)) {
+        if ($nowMonth === $firstInstallmentStartMonth or $nowMonth === $firstInstallmentEndMonth or $nowMonth < $firstInstallmentStartMonth) {
+            //if (now()->greaterThan($firstInstallment->start_date)) {
+            if (now()->greaterThan($this->start_date)) {
                 return render_payment_status_label('CURRENT_LOAN');
             } else {
                 return render_payment_status_label('PENDING_TO_START');

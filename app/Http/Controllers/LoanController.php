@@ -19,7 +19,7 @@ class LoanController extends Controller
         if (auth()->user()->type == 'staff') {
             $loans = Loan::with('installments')->where('created_by', auth()->user()->id)->latest()->paginate(25);
         } else {
-            $loans = Loan::with('installments')->orderBy('start_date')->paginate(25);
+            $loans = Loan::with('installments')->orderBy('start_date', 'desc')->paginate(25);
         }
 
         return view('loan.index', compact('loans'));
