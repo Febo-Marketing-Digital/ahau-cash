@@ -1,10 +1,12 @@
 <?php
 
+use App\Http\Controllers\BankController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DocumentationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\LoanController;
 use App\Http\Controllers\LoanInstallmentController;
+use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\UserController;
@@ -39,6 +41,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/staff/{user}', [StaffController::class, 'show'])->name('staff.show');
     Route::put('/staff/{user}/update', [StaffController::class, 'update'])->name('staff.update');
     Route::get('/staff/{user}/delete', [StaffController::class, 'delete'])->name('staff.delete');
+
+    Route::get('/banks', [BankController::class, 'index'])->name('bank.index');
+    Route::get('/bank', [BankController::class, 'create'])->name('bank.create');
+    Route::post('/bank', [BankController::class, 'store'])->name('bank.store');
+    Route::get('/bank/{bank}/delete', [BankController::class, 'delete'])->name('bank.delete');
 
     Route::get('/clients', [UserController::class, 'index'])->name('client.index');
     Route::get('/client', [UserController::class, 'create'])->name('client.create');

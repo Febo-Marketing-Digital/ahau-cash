@@ -9,7 +9,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
                 <div class="max-w-xl">
-                
+
                     <header>
                         <h2 class="text-lg font-medium text-gray-900">{{ $user->name }} {{ $user->lastname }}</h2>
                         <p class="mt-1 text-sm text-gray-600">Creado {{ $user->created_at->diffForHumans() }} - Tiene <strong>{{ $user->loans->count() }} prestamos</strong> en su historial.</p>
@@ -34,11 +34,11 @@
 
                         <div>
                             <x-input-label for="gender" :value="__('Gender')" />
-                            
+
                             <input type="radio" name="gender" id="male" value="M" @if($user->gender == 'M') checked @endif>
                             <label for="male">Masculino</label><br>
                             <input type="radio" id="female" name="gender" value="F" @if($user->gender == 'F') checked @endif>
-                            <label for="female">Femenino</label><br>  
+                            <label for="female">Femenino</label><br>
                             <br>
                         </div>
 
@@ -98,8 +98,8 @@
                             <x-input-label for="bank_name" :value="__('Bank name')" />
                             <select name="bank_name" id="bank_name">
                                 <option value="" selected>Selecciona a un banco</option>
-                                @foreach($banks as $key => $bank)
-                                    <option value="{{ $key }}">{{ $bank }}</option>
+                                @foreach($banks as $bank)
+                                    <option value="{{ $bank->code }}">{{ $bank->display_name }}</option>
                                 @endforeach
                             </select>
                             <x-input-error class="mt-2" :messages="$errors->get('bank_name')" />

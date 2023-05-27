@@ -9,7 +9,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
                 <div class="max-w-xl">
-                
+
                     <header>
                         <h2 class="text-lg font-medium text-gray-900">{{ $user->name }} {{ $user->lastname }}</h2>
                         <p class="mt-1 text-sm text-gray-600">Ultima actualización de datos fue el {{ $user->updated_at->diffForHumans() }}</p>
@@ -32,23 +32,29 @@
                             <x-input-error class="mt-2" :messages="$errors->get('account_owner_lastname')" />
                         </div>
 
-
                         <div>
                             <x-input-label for="bank_name" :value="__('Bank name')" />
-                            <x-text-input id="bank_name" name="bank_name" type="text" class="mt-1 block w-full" value="{{ $user->bankDetails?->first()->bank_name }}"  />
+                            <select name="bank_name" id="bank_name">
+                                @foreach($banks as $bank)
+                                    @if($bank->display_name == $user->bankDetails?->bank_name)
+                                        <option value="{{ $bank->code }}" selected="selected">{{ $bank->display_name }}</option>
+                                    @else
+                                        <option value="{{ $bank->code }}">{{ $bank->display_name }}</option>
+                                    @endif
+                                @endforeach
+                            </select>
                             <x-input-error class="mt-2" :messages="$errors->get('bank_name')" />
                         </div>
 
-
                         <div>
                             <x-input-label for="account_number" :value="__('Account Number')" />
-                            <x-text-input id="account_number" name="account_number" type="text" class="mt-1 block w-full" value="{{ $user->bankDetails?->first()->account_number }}"  />
+                            <x-text-input id="account_number" name="account_number" type="text" class="mt-1 block w-full" value="{{ $user->bankDetails?->account_number }}"  />
                             <x-input-error class="mt-2" :messages="$errors->get('account_number')" />
                         </div>
 
                         <div>
                             <x-input-label for="clabe" :value="__('CLABE')" />
-                            <x-text-input id="clabe" name="clabe" type="text" class="mt-1 block w-full" value="{{ $user->bankDetails?->first()->clabe }}"  />
+                            <x-text-input id="clabe" name="clabe" type="text" class="mt-1 block w-full" value="{{ $user->bankDetails?->clabe }}"  />
                             <x-input-error class="mt-2" :messages="$errors->get('clabe')" />
                         </div>
 
