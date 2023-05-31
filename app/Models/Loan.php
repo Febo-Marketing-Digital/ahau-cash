@@ -79,6 +79,10 @@ class Loan extends Model implements HasMedia
             return render_payment_status_label('SETTLED');
         }
 
+        if (LoanInstallment::whereNull('paid_at')->where('loan_id', $this->id)->count() === 0) {
+            return render_payment_status_label('SETTLED');
+        }
+
         $firstInstallment = $this->installments()->first();
 
         $nowMonth = now()->format('m');
@@ -93,10 +97,10 @@ class Loan extends Model implements HasMedia
                 return render_payment_status_label('PENDING_TO_START');
             }
         } else {
-            $lastPaidInstallment = $this->installments()->whereNotNull('paid_at')->orderBy('start_date', 'DESC')->first();
-            if ($lastPaidInstallment && $lastPaidInstallment->end_date->lessThan(now())) {
+            $lastPaidInstallment = LoanInstallment::whereNotNull('paid_at')->where('loan_id', $this->id)->latest()->first();
+            if ($lastPaidInstallment && is_null($lastPaidInstallment->paid_at) && $lastPaidInstallment->end_date->lessThan(now())) {
                 return render_payment_status_label('PAST_DUE');
-            } elseif ($lastPaidInstallment && $lastPaidInstallment->end_date->diff(now()) <= 10) {
+            } elseif ($lastPaidInstallment && ($lastPaidInstallment->end_date->diffInDays(now()) <= 10)) {
                 return render_payment_status_label('CLOSE_TO_PAYMENT');
             } else {
                 return render_payment_status_label('PAST_DUE');
