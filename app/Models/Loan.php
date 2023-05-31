@@ -84,11 +84,18 @@ class Loan extends Model implements HasMedia
         }
 
         $firstInstallment = $this->installments()->first();
-        //$lastInstallment = $this->installments()->latest()->first();
 
         $nowMonth = now()->format('m');
         $firstInstallmentStartMonth = $firstInstallment->start_date->format('m');
         //$firstInstallmentEndMonth = $firstInstallment->end_date->format('m');
+
+        $lastPaidInstallment = LoanInstallment::whereNotNull('paid_at')->where('loan_id', $this->id)->latest()->first();
+
+        if ($lastPaidInstallment && is_null($lastPaidInstallment->paid_at) && $lastPaidInstallment->end_date->lessThan(now())) {
+            return render_payment_status_label('PAST_DUE');
+        } elseif ($lastPaidInstallment && ($lastPaidInstallment->end_date->diffInDays(now()) <= 10)) {
+            return render_payment_status_label('CLOSE_TO_PAYMENT');
+        }
 
         // Si la fecha de inicio es mayor a hoy el credito esta por inciar
         if ($this->start_date > now()) {
@@ -105,35 +112,7 @@ class Loan extends Model implements HasMedia
             }
         }
 
-        $lastPaidInstallment = LoanInstallment::whereNotNull('paid_at')->where('loan_id', $this->id)->latest()->first();
-
-        if ($lastPaidInstallment && is_null($lastPaidInstallment->paid_at) && $lastPaidInstallment->end_date->lessThan(now())) {
-            return render_payment_status_label('PAST_DUE');
-        } elseif ($lastPaidInstallment && ($lastPaidInstallment->end_date->diffInDays(now()) <= 10)) {
-            return render_payment_status_label('CLOSE_TO_PAYMENT');
-        } else {
-            return render_payment_status_label('PAST_DUE');
-        }
-
-//        if (in_array($nowMonth,  [$firstInstallmentStartMonth, $firstInstallmentEndMonth]) or $nowMonth < $firstInstallmentStartMonth) {
-//            if (now()->greaterThan($firstInstallment->start_date)) {
-//            //if (now()->greaterThan($this->start_date)) {
-//                return render_payment_status_label('CURRENT_LOAN');
-//            } else {
-//                return render_payment_status_label('PENDING_TO_START');
-//            }
-//        } else {
-//            $lastPaidInstallment = LoanInstallment::whereNotNull('paid_at')->where('loan_id', $this->id)->latest()->first();
-//            if ($lastPaidInstallment && is_null($lastPaidInstallment->paid_at) && $lastPaidInstallment->end_date->lessThan(now())) {
-//                return render_payment_status_label('PAST_DUE');
-//            } elseif ($lastPaidInstallment && ($lastPaidInstallment->end_date->diffInDays(now()) <= 10)) {
-//                return render_payment_status_label('CLOSE_TO_PAYMENT');
-//            } else {
-//                return render_payment_status_label('PAST_DUE');
-//            }
-//        }
-
-        //return render_payment_status_label('UNKNOWN');
+        return render_payment_status_label('PAST_DUE');
     }
 
     public function installments(): HasMany
