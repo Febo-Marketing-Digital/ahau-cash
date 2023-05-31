@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -57,7 +58,8 @@ class User extends Authenticatable implements HasMedia
      */
     public function fullname(): string
     {
-        return $this->name . ' ' . $this->lastname;
+        $fullName = $this->name . ' ' . $this->lastname;
+        return Str::limit($fullName, 20);
     }
 
     public function phonenumbers(): HasMany
