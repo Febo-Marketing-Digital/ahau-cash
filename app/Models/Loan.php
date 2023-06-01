@@ -73,43 +73,94 @@ class Loan extends Model implements HasMedia
         return '';
     }
 
+//    public function loanPaymentStatus(): array
+//    {
+//        if ($this->status == 'SETTLED') {
+//            return render_payment_status_label('SETTLED');
+//        }
+//
+//        if (LoanInstallment::whereNull('paid_at')->where('loan_id', $this->id)->count() === 0) {
+//            return render_payment_status_label('SETTLED');
+//        }
+//
+//        $firstInstallment = $this->installments()->first();
+//
+//        $nowMonth = now()->format('m');
+//        $firstInstallmentStartMonth = $firstInstallment->start_date->format('m');
+//
+//        $lastPaidInstallment = LoanInstallment::whereNotNull('paid_at')->where('loan_id', $this->id)->latest()->first();
+//
+//        if ($lastPaidInstallment && is_null($lastPaidInstallment->paid_at) && $lastPaidInstallment->end_date->lessThan(now())) {
+//            return render_payment_status_label('PAST_DUE');
+//        }/* elseif ($lastPaidInstallment && ($lastPaidInstallment->end_date->diffInDays(now()) <= 10)) {
+//            return render_payment_status_label('CLOSE_TO_PAYMENT');
+//        }*/
+//
+//        // Si la fecha de inicio es mayor a hoy el credito esta por inciar
+//        if ($this->start_date > now()) {
+//            return render_payment_status_label('PENDING_TO_START');
+//        }
+//        // Si el mes y año del primer pago coincide con el mes y año de la fecha actual
+//        if ($firstInstallmentStartMonth === $nowMonth && $firstInstallment->end_date->format('Y') === now()->format('Y')) {
+//            // Si la fecha final esta a 10 de la fecha actual
+//            if ($firstInstallment->end_date->diffInDays(now()) <= 10) {
+//                return render_payment_status_label('CLOSE_TO_PAYMENT');
+//            } else {
+//                // el credito esta al corriente
+//                return render_payment_status_label('CURRENT_LOAN');
+//            }
+//        }
+//
+//        $currentInstallment = $this->installments()
+//            ->whereDate('start_date', '<=', now()->format('Y-m-d'))
+//            ->orWhereDate('end_date', '>=', now()->format('Y-m-d'))
+//            ->first();
+//
+//        if ($currentInstallment) {
+//            $previousInstallment = LoanInstallment::where('id', '<', $currentInstallment->id)
+//                ->orderBy('id','desc')
+//                ->first();
+//
+//            if (is_null($previousInstallment->paid_at)) {
+//                return render_payment_status_label('PAST_DUE');
+//            }
+//        }
+//
+//        if ($currentInstallment && $currentInstallment->end_date->diffInDays(now()) <= 10) {
+//            if (is_null($currentInstallment->paid_at)) {
+//                return render_payment_status_label('CLOSE_TO_PAYMENT');
+//            } else {
+//                return render_payment_status_label('CURRENT_LOAN');
+//            }
+//        }
+//        return render_payment_status_label('PAST_DUE');
+//    }
+
     public function loanPaymentStatus(): array
     {
         if ($this->status == 'SETTLED') {
             return render_payment_status_label('SETTLED');
         }
 
-        if (LoanInstallment::whereNull('paid_at')->where('loan_id', $this->id)->count() === 0) {
-            return render_payment_status_label('SETTLED');
-        }
+        $currentInstallment = $this->installments()
+            ->whereDate('start_date', '<=', now()->format('Y-m-d'))
+            ->WhereDate('end_date', '>=', now()->format('Y-m-d'))
+            ->first();
 
-        $firstInstallment = $this->installments()->first();
+        if ($currentInstallment) {
+            if ($currentInstallment->paid_at == null) {
+                $previousInstallment = LoanInstallment::where('id', '<', $currentInstallment->id)
+                    ->orderBy('id','desc')
+                    ->first();
 
-        $nowMonth = now()->format('m');
-        $firstInstallmentStartMonth = $firstInstallment->start_date->format('m');
-        //$firstInstallmentEndMonth = $firstInstallment->end_date->format('m');
-
-        $lastPaidInstallment = LoanInstallment::whereNotNull('paid_at')->where('loan_id', $this->id)->latest()->first();
-
-        if ($lastPaidInstallment && is_null($lastPaidInstallment->paid_at) && $lastPaidInstallment->end_date->lessThan(now())) {
-            return render_payment_status_label('PAST_DUE');
-        } elseif ($lastPaidInstallment && ($lastPaidInstallment->end_date->diffInDays(now()) <= 10)) {
-            return render_payment_status_label('CLOSE_TO_PAYMENT');
-        }
-
-        // Si la fecha de inicio es mayor a hoy el credito esta por inciar
-        if ($this->start_date > now()) {
-            return render_payment_status_label('PENDING_TO_START');
-        }
-        // Si el mes y año del primer pago coincide con el mes y año de la fecha actual
-        if ($firstInstallmentStartMonth === $nowMonth && $firstInstallment->end_date->format('Y') === now()->format('Y')) {
-            // Si la fecha final esta a 10 de la fecha actual
-            if ($firstInstallment->end_date->diffInDays(now()) <= 10) {
-                return render_payment_status_label('CLOSE_TO_PAYMENT');
+                if ($currentInstallment->end_date->diffInDays(now()) <= 10 && $previousInstallment->paid_at != null) {
+                    return render_payment_status_label('CLOSE_TO_PAYMENT');
+                }
             } else {
-                // el credito esta al corriente
                 return render_payment_status_label('CURRENT_LOAN');
             }
+        } else {
+            return render_payment_status_label('PENDING_TO_START');
         }
 
         return render_payment_status_label('PAST_DUE');
