@@ -81,10 +81,10 @@
                                 @foreach($loan->installments as $key => $installment)
                                 <tr @if(! is_null($installment->paid_at)) style="background-color: #7ec17e; color: white;" @endif>
                                     <td>{{ $key + 1 }}</td>
-                                    <td>{{ $installment->start_date }}</td>
-                                    <td>{{ $installment->end_date }}</td>
-                                    <td>{{ $installment->amount }}</td>
-                                    <td>{{ $installment->balance }}</td>
+                                    <td>{{ $installment->start_date->format('d/m/Y') }}</td>
+                                    <td>{{ $installment->end_date->format('d/m/Y') }}</td>
+                                    <td>{{ $installment->formattedAmount() }}</td>
+                                    <td>{{ $installment->formattedBalance() }}</td>
                                     <td>
                                         {!! $installment->getMediaLink() !!}
                                     </td>
