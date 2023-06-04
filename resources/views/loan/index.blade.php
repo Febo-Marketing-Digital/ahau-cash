@@ -37,13 +37,13 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($loans as $loan)                        
+                                @foreach($loans as $loan)
                                 <tr>
                                     <td>
-                                        @if(auth()->user()->type == 'admin' && $loan->status == 'PENDING') 
+                                        @if(auth()->user()->type == 'admin' && $loan->status == 'PENDING')
                                             <i class="bi bi-circle-fill text-warning"></i>
-                                        @elseif(auth()->user()->type == 'staff' && $loan->status == 'PENDING') 
-                                            <i class="bi bi-circle-fill text-warning"></i> 
+                                        @elseif(auth()->user()->type == 'staff' && $loan->status == 'PENDING')
+                                            <i class="bi bi-circle-fill text-warning"></i>
                                         @else
                                             <i class="bi bi-check-circle text-success"></i>
                                         @endif
@@ -53,11 +53,11 @@
                                     <td>{{ $loan->formattedAmount() }}</td>
                                     <td>{{ $loan->roi }} %</td>
                                     <td>{{ $loan->amountToReturn() }}</td>
-                                    <td>{{ $loan->installment_period }}</td>
+                                    <td>{{ __($loan->installment_period) }}</td>
                                     <td><span class="badge bg-{{ $loan->loanPaymentStatus()[1] }}">{{ $loan->loanPaymentStatus()[0] }}</span></td>
                                     <td>
                                         <a class="btn btn-dark" title="Ver detalles del prestamo" href="{{ route('loan.show', $loan->uuid) }}"><i class="bi bi-eye-fill"></i></a>
-                                        <a class="btn btn-danger" title="Eliminar préstamo" href="{{ route('loan.delete', $loan) }}" onclick="confirm('Seguro que desea eliminar este préstamo?');"><i class="bi bi-trash3"></i></a>
+                                        <a class="btn btn-danger" title="Eliminar préstamo" href="{{ route('loan.delete', $loan) }}" onclick="return confirm('Seguro que desea eliminar este préstamo?');"><i class="bi bi-trash3"></i></a>
                                     </td>
                                 </tr>
                                 @endforeach

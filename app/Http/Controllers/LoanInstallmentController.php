@@ -29,12 +29,10 @@ class LoanInstallmentController extends Controller
 
             $installment->paid_at = now();
             $installment->save();
-            
+
 
         } catch (Exception $exception) {
-            dd($exception->getMessage());
-
-            return redirect()->back();
+            return redirect()->back()->with('error', $exception->getMessage());
         }
 
         // redirect to documentation module

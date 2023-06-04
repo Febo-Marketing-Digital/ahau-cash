@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use NumberFormatter;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
@@ -27,6 +28,18 @@ class LoanInstallment extends Model implements HasMedia
         'start_date',
         'end_date',
     ];
+
+    public function formattedAmount(): string
+    {
+        $fmt = new NumberFormatter('es_MX', NumberFormatter::CURRENCY);
+        return $fmt->formatCurrency($this->amount, "MXN");
+    }
+
+    public function formattedBalance(): string
+    {
+        $fmt = new NumberFormatter('es_MX', NumberFormatter::CURRENCY);
+        return $fmt->formatCurrency($this->balance, "MXN");
+    }
 
     public function getMediaLink(): string
     {
