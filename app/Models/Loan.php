@@ -85,8 +85,6 @@ class Loan extends Model implements HasMedia
             ->WhereDate('end_date', '>=', now()->format('Y-m-d'))
             ->first();
 
-//       dump($currentInstallment->id);
-
         if ($currentInstallment) {
             if ($currentInstallment->paid_at == null) {
                 $previousInstallment = LoanInstallment::where('id', '<', $currentInstallment->id)
@@ -109,7 +107,19 @@ class Loan extends Model implements HasMedia
                 ->orderBy('id','desc')
                 ->first();
 
-            //dump($lastInstallment->id);
+            $firstInstallment = LoanInstallment::where('loan_id', '=', $this->id)
+                ->orderBy('id','asc')
+                ->first();
+
+            if ($firstInstallment->start_date->format('m') > now()->format('m')) {
+                return render_payment_status_label('PENDING_TO_START');
+            }
+
+            if ($firstInstallment->start_date->format('m') == now()->format('m')
+                && $firstInstallment->start_date->format('d') > now()->format('d')
+            ) {
+                return render_payment_status_label('PENDING_TO_START');
+            }
 
             if ($lastInstallment->paid_at == null) {
                 return render_payment_status_label('PAST_DUE');
