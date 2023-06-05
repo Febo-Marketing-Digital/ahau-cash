@@ -92,7 +92,9 @@ class Loan extends Model implements HasMedia
                     ->orderBy('id','desc')
                     ->first();
 
-                if ($currentInstallment->end_date->diffInDays(now()) <= 10 && $previousInstallment->paid_at != null) {
+                if ($currentInstallment->end_date->diffInDays(now()) <= 10
+                    && ($previousInstallment && $previousInstallment->paid_at != null)
+                ) {
                     return render_payment_status_label('CLOSE_TO_PAYMENT');
                 } elseif ($previousInstallment && $previousInstallment->paid_at == null) {
                     return render_payment_status_label('PAST_DUE');
