@@ -23,6 +23,31 @@
                     </header>
 
                     <div class="mt-4">
+
+                        <div class="">
+                            <form action="">
+                                <x-text-input
+                                    name="name"
+                                    type="text"
+                                    class="mt-1 block w-3/4"
+                                    placeholder="Buscar por cliente..."
+                                />
+                                <br>
+                                <x-text-input
+                                    name="start_date"
+                                    type="date"
+                                    class="mt-1 block w-3/4"
+                                    placeholder="Buscar por fecha de inicio..."
+                                />
+
+                                <div class="mt-3 block w-auto">
+                                    <x-primary-button>{{ __('Filter') }}</x-primary-button>
+
+                                    <a href="{{ route('loan.index') }}">Limpiar filtro</a>
+                                </div>
+                            </form>
+                        <div>
+
                         <table class="table table-striped">
                             <thead>
                                 <tr>
