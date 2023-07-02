@@ -45,23 +45,25 @@ class DashboardController extends Controller
             'group_by_period' => 'month',
             'chart_type' => 'bar',
         ]);
-
-        $whereRaw = "";
-        if ($fromDate && $chartNumber == 3) {
-            $whereRaw = "created_at between '$fromDate' and '$toDate'";
-        }
-        // TODO: create this array for parametres dinamic
-        $chart3 = new LaravelChart([
+        
+        $config = [
             'chart_title' => 'Dinero prestado por fechas',
             'report_type' => 'group_by_date',
             'model' => 'App\Models\Loan',
-            'where_raw' => $whereRaw,
             'group_by_field' => 'created_at',
             'group_by_period' => 'day',
             'aggregate_function' => 'sum',
             'aggregate_field' => 'amount',
             'chart_type' => 'line',
-        ]);
+        ];
+
+        if ($fromDate && $chartNumber == 3) {
+            $config = array_merge($config, [
+                'where_raw' => "created_at between '$fromDate' and '$toDate'",
+            ]);
+        }
+
+        $chart3 = new LaravelChart($config);
 
         $whereRaw = "type = 'client'";
         if ($fromDate && $chartNumber == 4) {
