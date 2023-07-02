@@ -20,16 +20,12 @@ class DashboardController extends Controller
         if (auth()->user()->type == 'staff') {
             return view('dashboard_staff' );
         }
-        
-        $earnings = 0; // Ganancia, total en intereses
-        
-        $totalClients = User::where('type', 'client')->count();
-        
-        // $totalLoans = Loan::count();
-        // $totalActiveLoans = Loan::where('status', 'APPROVED')->count();
 
-        // $totalLoansAmount = Loan::where('status', 'APPROVED')->sum('amount');
-        // $totalActiveLoansAmount = Loan::where('status', 'APPROVED')->sum('amount');
+        $totalClients = User::where('type', 'client')->count();
+
+        $fromDate = $request->get('from_date'); // Fecha de inicio obligatoria
+        $toDate = $request->get('to_date') ?? now()->format('Y-m-d');
+        $chartNumber = $request->get('chart');
 
         $chart1 = new LaravelChart([
             'chart_title' => 'Préstamos al mes',
@@ -50,7 +46,7 @@ class DashboardController extends Controller
             'chart_type' => 'bar',
         ]);
         
-        $chart3 = new LaravelChart([
+        $config = [
             'chart_title' => 'Dinero prestado por fechas',
             'report_type' => 'group_by_date',
             'model' => 'App\Models\Loan',
@@ -59,22 +55,46 @@ class DashboardController extends Controller
             'aggregate_function' => 'sum',
             'aggregate_field' => 'amount',
             'chart_type' => 'line',
-        ]);
+        ];
+
+        if ($fromDate && $chartNumber == 3) {
+            $config = array_merge($config, [
+                'where_raw' => "created_at between '$fromDate' and '$toDate'",
+            ]);
+        }
+
+        $chart3 = new LaravelChart($config);
+
+        $whereRaw = "type = 'client'";
+        if ($fromDate && $chartNumber == 4) {
+           $whereRaw = "type = 'client' and created_at between '$fromDate' and '$toDate'";
+        }
 
         $chart4 = new LaravelChart([
-            'chart_title' => 'Usuarios ultimos 30 dias',
+            'chart_title' => 'Usuarios en rango',
             'report_type' => 'group_by_date',
             'model' => 'App\Models\User',
-            'where_raw' => "type = 'client'",
+            'where_raw' => $whereRaw,
             'group_by_field' => 'created_at',
             'group_by_period' => 'month',
             'chart_type' => 'bar',
             'filter_field' => 'created_at',
-            'filter_days' => 30, // show only last 30 days
+            'filter_days' => 365, // show only last 30 days
         ]);
+//        $chart4 = new LaravelChart([
+//            'chart_title' => 'Clientes registrados',
+//            'report_type' => 'group_by_date',
+//            'model' => 'App\Models\User',
+//            'group_by_field' => 'created_at',
+//            'group_by_period' => 'month',
+//            'aggregate_function' => 'sum',
+//            'aggregate_field' => 'id',
+//            'chart_type' => 'line',
+//            'filter_days' => 365, // show only last 30 days
+//        ]);
 
-        return view('dashboard', 
-            compact('earnings', 'totalClients', 'chart1', 'chart2', 'chart3', 'chart4')
+        return view('dashboard',
+            compact( 'totalClients', 'chart1', 'chart2', 'chart3', 'chart4')
         );
     }
 }

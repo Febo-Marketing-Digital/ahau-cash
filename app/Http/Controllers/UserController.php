@@ -13,14 +13,24 @@ use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $clients = User::with('phonenumbers')
-            ->where('type', '=', 'client')
-            ->orderBy('id')->paginate(25);
+        $clients = User::query();
+        $clients->with('phonenumbers');
 
-        $sortedResult = $clients->getCollection()->sortBy('name')->values();
-        $clients->setCollection($sortedResult);
+        if ($filter = $request->get('name')) {
+            $clients->where(function ($query) use ($filter) {
+               $query->where('name', 'like', '%'.$filter.'%')
+                   ->orWhere('lastname', 'like', '%'.$filter.'%');
+            });
+        }
+
+        $clients = $clients->where('type', '=', 'client')
+            ->orderBy('name')
+            ->paginate(25);
+
+        //$sortedResult = $clients->getCollection()->sortBy('name')->values();
+        //$clients->setCollection($sortedResult);
 
         return view('user.index', compact('clients'));
     }

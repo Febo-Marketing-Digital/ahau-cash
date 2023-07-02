@@ -23,6 +23,24 @@
                     </header>
 
                     <div class="mt-4">
+
+                        <div class="">
+                            <form action="">
+                                <x-text-input
+                                    name="name"
+                                    type="text"
+                                    class="mt-1 block w-3/4"
+                                    placeholder="Buscar por nombre..."
+                                />
+
+                                <div class="mt-3 block w-auto">
+                                    <x-primary-button>{{ __('Filter') }}</x-primary-button>
+
+                                    <a href="{{ route('client.index') }}">Limpiar filtro</a>
+                                </div>
+                            </form>
+                        <div>
+
                         <table class="table table-striped">
                             <thead>
                                 <tr>

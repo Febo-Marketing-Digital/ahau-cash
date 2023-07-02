@@ -14,12 +14,26 @@ use Illuminate\Support\Str;
 
 class LoanController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $loansQuery = Loan::query();
+        $loansQuery->with(['user', 'installments']);
+
+        if ($name = $request->get('name')) {
+            $loansQuery->where(function($query) use ($name) {
+               $query->whereRelation('user', 'name','like', '%'.$name. '%')
+                   ->orWhereRelation('user', 'lastname','like', '%'.$name. '%');
+            });
+        }
+
+        if ($date = $request->get('start_date')) {
+            $loansQuery->whereDate('start_date', '=', $date);
+        }
+
         if (auth()->user()->type == 'staff') {
-            $loans = Loan::with('installments')->where('created_by', auth()->user()->id)->latest()->paginate(25);
+            $loans = $loansQuery->where('created_by', auth()->user()->id)->latest()->paginate(25);
         } else {
-            $loans = Loan::with('installments')->orderBy('start_date', 'desc')->paginate(25);
+            $loans = $loansQuery->orderBy('start_date', 'desc')->paginate(25);
         }
 
         return view('loan.index', compact('loans'));
@@ -30,7 +44,10 @@ class LoanController extends Controller
         if ($request->has('client_id')) {
             $clients = User::where('id', $request->get('client_id'))->get();
         } else {
-            $allCLients = User::with('address', 'bankDetails')->where('type', 'client')->get();
+            $allCLients = User::with('address', 'bankDetails')
+                ->where('type', 'client')
+                ->orderBy('name')
+                ->get();
 
             $clients = $allCLients->reject(function($client) {
                 return is_null($client->address) or is_null($client->bankDetails);
