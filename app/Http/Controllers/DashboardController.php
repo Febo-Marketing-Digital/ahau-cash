@@ -45,7 +45,7 @@ class DashboardController extends Controller
             'group_by_period' => 'month',
             'chart_type' => 'bar',
         ]);
-        
+
         $config = [
             'chart_title' => 'Dinero prestado por fechas',
             'report_type' => 'group_by_date',

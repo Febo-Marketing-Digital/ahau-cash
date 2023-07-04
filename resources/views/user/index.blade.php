@@ -59,7 +59,9 @@
                                     <td>{{ $client->phonenumbers->first()?->phonenumber }}</td>
                                     <td>{{ $client->created_at->diffForHumans() }}</td>
                                     <td>
+                                        @if(auth()->user()->type == 'admin')
                                         <a class="btn btn-dark" title="Ver o editar detalles" href="{{ route('client.edit', $client) }}"><i class="bi bi-person-fill-exclamation"></i></a>
+                                        @endif
                                         <a class="btn btn-primary" title="Documentacion" href="{{ route('documentation.edit', $client) }}"><i class="bi bi-person-rolodex"></i></a>
                                         @if(is_null($client->address) or is_null($client->bankDetails))
                                         <a class="btn btn-mute" title="Nuevo prestamo" href="#" onclick="alert('Cliente con informacion incompleta.');"><i class="bi bi-cash-coin"></i></a>
