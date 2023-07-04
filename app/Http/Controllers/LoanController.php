@@ -30,11 +30,12 @@ class LoanController extends Controller
             $loansQuery->whereDate('start_date', '=', $date);
         }
 
-        if (auth()->user()->type == 'staff') {
-            $loans = $loansQuery->where('created_by', auth()->user()->id)->latest()->paginate(25);
-        } else {
-            $loans = $loansQuery->orderBy('start_date', 'desc')->paginate(25);
-        }
+//        if (auth()->user()->type == 'staff') {
+//            $loans = $loansQuery->where('created_by', auth()->user()->id)->latest()->paginate(25);
+//        } else {
+//            $loans = $loansQuery->orderBy('start_date', 'desc')->paginate(25);
+//        }
+        $loans = $loansQuery->orderBy('start_date', 'desc')->paginate(25);
 
         return view('loan.index', compact('loans'));
     }

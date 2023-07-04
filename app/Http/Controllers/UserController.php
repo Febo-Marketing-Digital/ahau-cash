@@ -97,6 +97,10 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
+        if (auth()->user()->type == 'staff') {
+            return redirect(route('client.index'));
+        }
+
         $activeBanks = Bank::where('is_active', 1)->get();
         $banks = $activeBanks->sortBy('display_name');
 
