@@ -30,7 +30,8 @@
                             @endforeach
                         @endif
 
-                        @if(! $item->paid_at && auth()->user()->type == 'admin')
+{{--                        @if(! $item->paid_at && auth()->user()->type == 'admin')--}}
+                        @if(! $item->paid_at)
                         <div class="pt-6">
                             <p class="mt-1 text-sm text-gray-600">Subir un comprobante de pago para marcar este pagaré como liquidado</p>
                             <form action="{{ route('loan.installment.storeNotePayment', ['installment' => $item]) }}" method="POST" enctype="multipart/form-data">
