@@ -46,6 +46,13 @@ class DashboardController extends Controller
             'chart_type' => 'bar',
         ]);
 
+        $lendedTotal = Loan::whereBetween('created_at', [now()->copy()->startOfYear(), now()])->sum('amount');
+
+        if ($fromDate) {
+            $userToDate = $toDate ?? now();
+            $lendedTotal = Loan::whereBetween('created_at', [$fromDate, $userToDate])->sum('amount');
+        }
+
         $config = [
             'chart_title' => 'Dinero prestado por fechas',
             'report_type' => 'group_by_date',
@@ -81,20 +88,9 @@ class DashboardController extends Controller
             'filter_field' => 'created_at',
             'filter_days' => 365, // show only last 30 days
         ]);
-//        $chart4 = new LaravelChart([
-//            'chart_title' => 'Clientes registrados',
-//            'report_type' => 'group_by_date',
-//            'model' => 'App\Models\User',
-//            'group_by_field' => 'created_at',
-//            'group_by_period' => 'month',
-//            'aggregate_function' => 'sum',
-//            'aggregate_field' => 'id',
-//            'chart_type' => 'line',
-//            'filter_days' => 365, // show only last 30 days
-//        ]);
 
         return view('dashboard',
-            compact( 'totalClients', 'chart1', 'chart2', 'chart3', 'chart4')
+            compact( 'totalClients', 'chart1', 'chart2', 'chart3', 'chart4', 'lendedTotal')
         );
     }
 }

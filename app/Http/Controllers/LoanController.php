@@ -26,8 +26,9 @@ class LoanController extends Controller
             });
         }
 
-        if ($date = $request->get('start_date')) {
-            $loansQuery->whereDate('start_date', '=', $date);
+        if ($from = $request->get('from_start_date')) {
+            $to = $request->get('to_start_date') ?? now();
+            $loansQuery->whereBetween('start_date', [$from, $to]);
         }
 
 //        if (auth()->user()->type == 'staff') {

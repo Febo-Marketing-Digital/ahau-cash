@@ -19,19 +19,23 @@
 
                     <h3 class="text-center">Dinero prestado</h3>
 
+                    <div class="py-6 px-4 text-center">
+                        <p>Total <strong>$ {{ $lendedTotal }}</strong></p>
+                    </div>
+
                     <div class="">
-                        <form action="">
+                        <form action="" class="flex">
                             <x-text-input
                                 name="from_date"
                                 type="date"
-                                class="mt-1 block w-3/4"
+                                class="mt-1 flex-1 w-1/2"
                                 placeholder="desde"
                             />
 
                             <x-text-input
                                 name="to_date"
                                 type="date"
-                                class="mt-1 block w-3/4"
+                                class="mt-1 flex-1 w-1/2"
                                 placeholder="hasta"
                             />
 
@@ -41,7 +45,7 @@
                                 value="3"
                             />
 
-                            <div class="mt-3 block w-auto">
+                            <div class="mt-3 w-auto">
                                 <x-primary-button>{{ __('Filtrar') }}</x-primary-button>
 
                                 <a href="{{ route('dashboard') }}">Limpiar filtro</a>
@@ -53,19 +57,19 @@
 
                     <h3 class="text-center">Clientes registrados</h3>
 
-                    <div class="">
-                        <form action="">
+                    <div class="my-6">
+                        <form action="" class="flex">
                             <x-text-input
                                 name="from_date"
                                 type="date"
-                                class="mt-1 block w-3/4"
+                                class="mt-1 flex-1 w-1/2"
                                 placeholder="desde"
                             />
 
                             <x-text-input
                                 name="to_date"
                                 type="date"
-                                class="mt-1 block w-3/4"
+                                class="mt-1 flex-1 w-1/2"
                                 placeholder="hasta"
                             />
 
@@ -75,7 +79,7 @@
                                 value="4"
                             />
 
-                            <div class="mt-3 block w-auto">
+                            <div class="mt-3 w-auto">
                                 <x-primary-button>{{ __('Filtrar') }}</x-primary-button>
 
                                 <a href="{{ route('dashboard') }}">Limpiar filtro</a>

@@ -33,12 +33,23 @@
                                     placeholder="Buscar por cliente..."
                                 />
                                 <br>
-                                <x-text-input
-                                    name="start_date"
-                                    type="date"
-                                    class="mt-1 block w-3/4"
-                                    placeholder="Buscar por fecha de inicio..."
-                                />
+
+                                <div class="flex">
+                                    <x-text-input
+                                        name="from_start_date"
+                                        type="date"
+                                        class="mt-1 flex-1 w-1/2 px-2"
+                                        placeholder="Buscar por fecha de inicio..."
+                                    />
+
+                                    <x-text-input
+                                        name="tp_start_date"
+                                        type="date"
+                                        class="mt-1 flex-1 w-1/2 mx-2"
+                                        placeholder="Buscar por fecha de inicio..."
+                                    />
+                                </div>
+
 
                                 <div class="mt-3 block w-auto">
                                     <x-primary-button>{{ __('Filter') }}</x-primary-button>
