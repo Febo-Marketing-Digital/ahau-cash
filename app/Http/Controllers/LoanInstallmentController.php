@@ -17,8 +17,10 @@ class LoanInstallmentController extends Controller
 
     public function storeNotePayment(Request $request, LoanInstallment $installment)
     {
-        // TODO Debido a que el staff tambien podra subir comprobantes
-        // agregar un campo updated_by que guarde el id del user autenticado que hizo el update
+        /* TODO:
+            Debido a que el staff tambien podra subir comprobantes
+            agregar un campo updated_by que guarde el id del user autenticado que hizo el update
+        */
         $request->validate([
             'proof_of_payment' => ['required', 'file'],
         ]);
@@ -37,7 +39,7 @@ class LoanInstallmentController extends Controller
             return redirect()->back()->with('error', $exception->getMessage());
         }
 
-        // redirect to documentation module
-        return redirect(route('loan.index'));
+        // redirect to loan details
+        return redirect(route('loan.show', $installment->loan->uuid));
     }
 }

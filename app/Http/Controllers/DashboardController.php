@@ -46,18 +46,18 @@ class DashboardController extends Controller
             'chart_type' => 'bar',
         ]);
 
-        $lendedTotal = Loan::whereBetween('created_at', [now()->copy()->startOfYear(), now()])->sum('amount');
+        $lendedTotal = Loan::whereBetween('start_date', [now()->copy()->startOfYear(), now()])->sum('amount');
 
         if ($fromDate) {
             $userToDate = $toDate ?? now();
-            $lendedTotal = Loan::whereBetween('created_at', [$fromDate, $userToDate])->sum('amount');
+            $lendedTotal = Loan::whereBetween('start_date', [$fromDate, $userToDate])->sum('amount');
         }
 
         $config = [
             'chart_title' => 'Dinero prestado por fechas',
             'report_type' => 'group_by_date',
             'model' => 'App\Models\Loan',
-            'group_by_field' => 'created_at',
+            'group_by_field' => 'start_date',
             'group_by_period' => 'day',
             'aggregate_function' => 'sum',
             'aggregate_field' => 'amount',

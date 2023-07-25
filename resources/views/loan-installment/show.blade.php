@@ -11,6 +11,7 @@
                 <div class="max-w-10xl">
 
                     <header>
+                        <p class="mb-3 text-xs font-semibold"><a href="/loan/{{ $item->loan->uuid }}">Regresa al detalle de este préstamo</a></p>
                         <h2 class="text-lg font-medium text-gray-900">Pagaré</h2>
                         <p class="mt-1 text-sm text-gray-600">Detalles del pagaré del prestamo con UUID: {{ $item->loan->uuid ?? 'N/A' }}</p>
                     </header>
