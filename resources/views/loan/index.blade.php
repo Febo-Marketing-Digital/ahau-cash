@@ -24,6 +24,12 @@
 
                     <div class="mt-4">
 
+                        @if(session("message"))
+                            <div class="py-4 px-6 rounded {{ session('class') }} text-white">
+                                {{ session('message') }}
+                            </div>
+                        @endif
+
                         <div class="">
                             <form action="">
                                 <x-text-input

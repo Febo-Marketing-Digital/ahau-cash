@@ -59,7 +59,6 @@ class LoanController extends Controller
         return view('loan.create', compact('clients'));
     }
 
-    // TODO: los prestamos creados por un usuario no admin, deben ser aprobados antes de estar activos.
     public function store(Request $request)
     {
         $request->validate([
@@ -97,49 +96,116 @@ class LoanController extends Controller
             $finalBalance = $amount + $percentage;
             $installmentAmount = $finalBalance / $request->installment_quantity;
 
-            $daysBy = $request->installment_period == 'MONTHLY' ? 30 : 15;
-            $startDate = \Carbon\Carbon::parse($request->start_date);
-            $endDate = $startDate->copy()->addDays($daysBy);
+            //$daysBy = $request->installment_period == 'MONTHLY' ? 30 : 15;
+            //$startDate = \Carbon\Carbon::parse($request->start_date);
+            //$endDate = $startDate->copy()->addDays($daysBy);
 
-            $installments = [];
+            $installments = $this->generateInstallments($loan, $finalBalance, $installmentAmount, $request->installment_quantity);
 
-            for ($i = 1; $i <= $request->installment_quantity; $i++) {
-
-                if ($installmentAmount > $finalBalance) {
-                    $installmentAmount = $finalBalance;
-                }
-
-                // Calculate dates
-                if ($i > 1) {
-                    $startDate = $endDate;
-                    $endDate = $startDate->copy()->addDays($daysBy);
-                }
-
-                // substract current installment from final balance (pending amount to paid)
-                $finalBalance = $finalBalance - $installmentAmount;
-
-                $installment = LoanInstallment::create([
-                    'loan_id' => $loan->id,
-                    'start_date' => $startDate,
-                    'end_date' => $endDate,
-                    'amount' => $installmentAmount,
-                    'balance' => $finalBalance,
-                ]);
-
-                $installments[] = $installment;
-            }
+//            $installments = [];
+//
+//            for ($i = 1; $i <= $request->installment_quantity; $i++) {
+//
+//                if ($installmentAmount > $finalBalance) {
+//                    $installmentAmount = $finalBalance;
+//                }
+//
+//                // Calculate dates
+//                if ($i > 1) {
+//                    $startDate = $endDate;
+//                    $endDate = $startDate->copy()->addDays($daysBy);
+//                }
+//
+//                // substract current installment from final balance (pending amount to paid)
+//                $finalBalance = $finalBalance - $installmentAmount;
+//
+//                $installment = LoanInstallment::create([
+//                    'loan_id' => $loan->id,
+//                    'start_date' => $startDate,
+//                    'end_date' => $endDate,
+//                    'amount' => $installmentAmount,
+//                    'balance' => $finalBalance,
+//                ]);
+//
+//                $installments[] = $installment;
+//            }
 
             // se crea el PDF
             $this->generatePdfs($loan, $installments);
 
             DB::commit();
 
-            return redirect(route('loan.index'));
+            return redirect(route('loan.index'))->with( 'message', 'Prestamo creado con exito')->with('class', 'bg-teal-600');
 
         } catch (Exception $e) {
-            dump($e->getMessage());
             DB::rollBack();
+
+            return redirect(route('loan.index'))->with( 'message', $e->getMessage())->with('class', 'bg-red-600');
         }
+    }
+
+    private function generateInstallments(Loan $loan, $finalBalance, $installmentAmount, $installmentQuantity): array
+    {
+        $startDate = $loan->start_date;
+        $installments = [];
+        $installmentStartIn31 = false;
+
+        // Calculate end date based on the month
+        if ($loan->installment_period == 'MONTHLY') {
+            if ($startDate->day == 31) {
+                // Loan starting on 31
+                $installmentStartIn31 = true;
+                $nextMonth = $startDate->copy()->addMonth();
+                $month = $nextMonth->month;
+                $daysBy = $nextMonth->month($month)->daysInMonth - 1;
+                $endDate = $startDate->copy()->addDays($daysBy);
+            } else {
+                $month = $startDate->month;
+                $daysBy = $startDate->month($month)->daysInMonth - 1;
+                $endDate = $startDate->copy()->addDays($daysBy);
+            }
+        } else {
+            throw new Exception('Installment period not implemented yet!');
+        }
+
+        $installment = null;
+
+        for ($i = 1; $i <= $installmentQuantity; $i++) {
+
+            if ($installmentAmount > $finalBalance) {
+                $installmentAmount = $finalBalance;
+            }
+
+            // Calculate dates
+            if ($i > 1) {
+                if ($installmentStartIn31) {
+                    $month = $installment->end_date->month;
+                    $daysBy = $startDate->month($month)->daysInMonth - 1;
+                    $startDate = $installment->end_date->endOfMonth();
+                    $endDate = $startDate->copy()->addDays($daysBy);
+                } else {
+                    $startDate = $endDate->copy()->addDays(1);
+                    $month = $endDate->month;
+                    $daysBy = $endDate->month($month)->daysInMonth - 1;
+                    $endDate = $startDate->copy()->addDays($daysBy);
+                }
+            }
+
+            // substract current installment from final balance (pending amount to paid)
+            $finalBalance = $finalBalance - $installmentAmount;
+
+            $installment = LoanInstallment::create([
+                'loan_id' => $loan->id,
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+                'amount' => $installmentAmount,
+                'balance' => $finalBalance,
+            ]);
+
+            $installments[] = $installment;
+        }
+
+        return $installments;
     }
 
     public function show(string $uuid)
