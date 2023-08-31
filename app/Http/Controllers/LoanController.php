@@ -20,9 +20,9 @@ class LoanController extends Controller
         $loansQuery->with(['user', 'installments']);
 
         if ($name = $request->get('name')) {
-            $loansQuery->where(function($query) use ($name) {
-               $query->whereRelation('user', 'name','like', '%'.$name. '%')
-                   ->orWhereRelation('user', 'lastname','like', '%'.$name. '%');
+            $loansQuery->where(function ($query) use ($name) {
+                $query->whereRelation('user', 'name', 'like', '%' . $name . '%')
+                    ->orWhereRelation('user', 'lastname', 'like', '%' . $name . '%');
             });
         }
 
@@ -31,11 +31,11 @@ class LoanController extends Controller
             $loansQuery->whereBetween('start_date', [$from, $to]);
         }
 
-//        if (auth()->user()->type == 'staff') {
-//            $loans = $loansQuery->where('created_by', auth()->user()->id)->latest()->paginate(25);
-//        } else {
-//            $loans = $loansQuery->orderBy('start_date', 'desc')->paginate(25);
-//        }
+        //        if (auth()->user()->type == 'staff') {
+        //            $loans = $loansQuery->where('created_by', auth()->user()->id)->latest()->paginate(25);
+        //        } else {
+        //            $loans = $loansQuery->orderBy('start_date', 'desc')->paginate(25);
+        //        }
         $loans = $loansQuery->orderBy('start_date', 'desc')->paginate(25);
 
         return view('loan.index', compact('loans'));
@@ -51,7 +51,7 @@ class LoanController extends Controller
                 ->orderBy('name')
                 ->get();
 
-            $clients = $allCLients->reject(function($client) {
+            $clients = $allCLients->reject(function ($client) {
                 return is_null($client->address) or is_null($client->bankDetails);
             });
         }
@@ -102,45 +102,44 @@ class LoanController extends Controller
 
             $installments = $this->generateInstallments($loan, $finalBalance, $installmentAmount, $request->installment_quantity);
 
-//            $installments = [];
-//
-//            for ($i = 1; $i <= $request->installment_quantity; $i++) {
-//
-//                if ($installmentAmount > $finalBalance) {
-//                    $installmentAmount = $finalBalance;
-//                }
-//
-//                // Calculate dates
-//                if ($i > 1) {
-//                    $startDate = $endDate;
-//                    $endDate = $startDate->copy()->addDays($daysBy);
-//                }
-//
-//                // substract current installment from final balance (pending amount to paid)
-//                $finalBalance = $finalBalance - $installmentAmount;
-//
-//                $installment = LoanInstallment::create([
-//                    'loan_id' => $loan->id,
-//                    'start_date' => $startDate,
-//                    'end_date' => $endDate,
-//                    'amount' => $installmentAmount,
-//                    'balance' => $finalBalance,
-//                ]);
-//
-//                $installments[] = $installment;
-//            }
+            //            $installments = [];
+            //
+            //            for ($i = 1; $i <= $request->installment_quantity; $i++) {
+            //
+            //                if ($installmentAmount > $finalBalance) {
+            //                    $installmentAmount = $finalBalance;
+            //                }
+            //
+            //                // Calculate dates
+            //                if ($i > 1) {
+            //                    $startDate = $endDate;
+            //                    $endDate = $startDate->copy()->addDays($daysBy);
+            //                }
+            //
+            //                // substract current installment from final balance (pending amount to paid)
+            //                $finalBalance = $finalBalance - $installmentAmount;
+            //
+            //                $installment = LoanInstallment::create([
+            //                    'loan_id' => $loan->id,
+            //                    'start_date' => $startDate,
+            //                    'end_date' => $endDate,
+            //                    'amount' => $installmentAmount,
+            //                    'balance' => $finalBalance,
+            //                ]);
+            //
+            //                $installments[] = $installment;
+            //            }
 
             // se crea el PDF
             $this->generatePdfs($loan, $installments);
 
             DB::commit();
 
-            return redirect(route('loan.index'))->with( 'message', 'Prestamo creado con exito')->with('class', 'bg-teal-600');
-
+            return redirect(route('loan.index'))->with('message', 'Prestamo creado con exito')->with('class', 'bg-teal-600');
         } catch (Exception $e) {
             DB::rollBack();
 
-            return redirect(route('loan.index'))->with( 'message', $e->getMessage())->with('class', 'bg-red-600');
+            return redirect(route('loan.index'))->with('message', $e->getMessage())->with('class', 'bg-red-600');
         }
     }
 
@@ -223,7 +222,7 @@ class LoanController extends Controller
             // valida si el prestamo no esta en proceso???
 
             $installments = LoanInstallment::where('loan_id', $loan->id)->get();
-            foreach($installments as $installment) {
+            foreach ($installments as $installment) {
                 $installment->delete();
             }
             $loan->delete();
@@ -273,10 +272,10 @@ class LoanController extends Controller
             'installments_total' => $loan->installments->count(),
         ];
         $pdf = Pdf::loadView('loan.pdf.contract_note', $data);
-        $pdf->save(storage_path('loans/'.$loan->uuid . "-contract.pdf"));
+        $pdf->save(storage_path('loans/' . $loan->uuid . "-contract.pdf"));
 
         $loan
-            ->addMedia(storage_path('loans/'.$loan->uuid . "-contract.pdf"))
+            ->addMedia(storage_path('loans/' . $loan->uuid . "-contract.pdf"))
             ->withCustomProperties(['note_type' => 'contract_note', 'note_name' => 'Contrato'])
             ->toMediaCollection('notes');
 
@@ -294,10 +293,10 @@ class LoanController extends Controller
         ];
 
         $pdf = Pdf::loadView('loan.pdf.loan_note', $data);
-        $pdf->save(storage_path('loans/'.$loan->uuid . "-total.pdf"));
+        $pdf->save(storage_path('loans/' . $loan->uuid . "-total.pdf"));
 
         $loan
-            ->addMedia(storage_path('loans/'.$loan->uuid . "-total.pdf"))
+            ->addMedia(storage_path('loans/' . $loan->uuid . "-total.pdf"))
             ->withCustomProperties(['note_type' => 'total_amount_note', 'note_name' => 'Pagaré Total'])
             ->toMediaCollection('notes');
 
@@ -313,15 +312,15 @@ class LoanController extends Controller
         ];
 
         $pdf = Pdf::loadView('loan.pdf.interest_note', $data);
-        $pdf->save(storage_path('loans/'.$loan->uuid . "-interest.pdf"));
+        $pdf->save(storage_path('loans/' . $loan->uuid . "-interest.pdf"));
 
         $loan
-            ->addMedia(storage_path('loans/'.$loan->uuid . "-interest.pdf"))
+            ->addMedia(storage_path('loans/' . $loan->uuid . "-interest.pdf"))
             ->withCustomProperties(['note_type' => 'total_interests_note', 'note_name' => 'Pagaré Intereses'])
             ->toMediaCollection('notes');
 
         // 4 .- se generan todos los pagares de los pagos mensuales o quincenales
-        foreach($installments as $key => $installment) {
+        foreach ($installments as $key => $installment) {
             $data = [
                 'loan_installment_amount' => $installment->amount,
                 'roi' => $loan->roi . '%',
@@ -332,10 +331,10 @@ class LoanController extends Controller
             ];
 
             $pdfInstallment = Pdf::loadView('loan.pdf.installment_note', $data);
-            $pdfInstallment->save(storage_path('loans/'.$loan->uuid . "-" . $key . "-.pdf"));
+            $pdfInstallment->save(storage_path('loans/' . $loan->uuid . "-" . $key . "-.pdf"));
 
             $installment
-                ->addMedia(storage_path('loans/'.$loan->uuid . "-" . $key . "-.pdf"))
+                ->addMedia(storage_path('loans/' . $loan->uuid . "-" . $key . "-.pdf"))
                 ->withCustomProperties(['note_type' => 'installment_note', 'note_name' => 'Pagaré ' . $key])
                 ->toMediaCollection('notes');
         }

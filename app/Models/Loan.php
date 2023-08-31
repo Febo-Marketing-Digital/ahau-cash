@@ -53,7 +53,6 @@ class Loan extends Model implements HasMedia
 
         $fmt = new NumberFormatter('es_MX', NumberFormatter::CURRENCY);
         return $fmt->formatCurrency($total, "MXN");
-
     }
 
     public function getMediaLink(): string
@@ -61,7 +60,7 @@ class Loan extends Model implements HasMedia
         if ($this->hasMedia('notes')) {
             $mediaItems = $this->getMedia('notes');
             $renderText = '';
-            foreach($mediaItems as $mediaItem) {
+            foreach ($mediaItems as $mediaItem) {
                 $linkText = $mediaItem->getCustomProperty('note_name') ?? $mediaItem->name;
                 $linkUrl = app()->environment('local') ? '' : $mediaItem->getTemporaryUrl(Carbon::now()->addMinutes(10));
                 $renderText .= '<p>DESCARGAR PDF: <a target="_blank" href=' . $linkUrl . ' download>' . $linkText . '</a></p>';
@@ -75,8 +74,10 @@ class Loan extends Model implements HasMedia
 
     public function loanPaymentStatus(): array
     {
-        if ($this->status == 'SETTLED'
-            || LoanInstallment::whereNull('paid_at')->where('loan_id', $this->id)->count() === 0) {
+        if (
+            $this->status == 'SETTLED'
+            || LoanInstallment::whereNull('paid_at')->where('loan_id', $this->id)->count() === 0
+        ) {
             return render_payment_status_label('SETTLED');
         }
 
@@ -89,10 +90,11 @@ class Loan extends Model implements HasMedia
             if ($currentInstallment->paid_at == null) {
                 $previousInstallment = LoanInstallment::where('id', '<', $currentInstallment->id)
                     ->where('loan_id', '=', $this->id)
-                    ->orderBy('id','desc')
+                    ->orderBy('id', 'desc')
                     ->first();
 
-                if ($currentInstallment->end_date->diffInDays(now()) <= 10
+                if (
+                    $currentInstallment->end_date->diffInDays(now()) <= 3
                     && ($previousInstallment && $previousInstallment->paid_at != null)
                 ) {
                     return render_payment_status_label('CLOSE_TO_PAYMENT');
@@ -106,18 +108,19 @@ class Loan extends Model implements HasMedia
             }
         } else {
             $lastInstallment = LoanInstallment::where('loan_id', '=', $this->id)
-                ->orderBy('id','desc')
+                ->orderBy('id', 'desc')
                 ->first();
 
             $firstInstallment = LoanInstallment::where('loan_id', '=', $this->id)
-                ->orderBy('id','asc')
+                ->orderBy('id', 'asc')
                 ->first();
 
             if ($firstInstallment->start_date->format('m') > now()->format('m')) {
                 return render_payment_status_label('PENDING_TO_START');
             }
 
-            if ($firstInstallment->start_date->format('m') == now()->format('m')
+            if (
+                $firstInstallment->start_date->format('m') == now()->format('m')
                 && $firstInstallment->start_date->format('d') > now()->format('d')
             ) {
                 return render_payment_status_label('PENDING_TO_START');
@@ -148,5 +151,3 @@ class Loan extends Model implements HasMedia
         return $this->belongsTo(User::class, 'created_by');
     }
 }
-
-
