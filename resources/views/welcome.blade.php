@@ -39,17 +39,14 @@
                 @auth
                     <a href="{{ url('/dashboard') }}" class="text-sm text-gray-700 dark:text-gray-500 underline">Dashboard</a>
                 @else
-                    <a href="{{ route('login') }}" class="text-sm text-gray-700 dark:text-gray-500 underline">Log in</a>
+                    <a href="{{ route('login') }}" class="text-gray-700 dark:text-white">Log in</a>
                 @endauth
             </div>
 
             <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
                 <div class="flex justify-center pt-8 sm:justify-start sm:pt-0">
-                    <h1 class="text-gray-200 dark:text-white" style="font-size: 6rem; line-height: 1;">AHAU CASH</h1>
-                </div>
-
-                <div class="mt-8 sm:rounded-lg text-center">
-                    <img src="https://totalbanksolutions.com/wp-content/uploads/2021/07/lms-featured-image.svg" alt="replace">
+                    <img src="/images/ahaucash-white.png" alt="Ahau Cash Logo" style="width: 400px">
+                    <h1 class="text-gray-200 hidden dark:text-white" style="font-size: 6rem; line-height: 1;">AHAU CASH</h1>
                 </div>
             </div>
         </div>

@@ -22,14 +22,16 @@ class LoanInstallmentController extends Controller
             agregar un campo updated_by que guarde el id del user autenticado que hizo el update
         */
         $request->validate([
-            'proof_of_payment' => ['required', 'file'],
+            'proof_of_payment' => 'file',
+            'mark_as_paid' => "sometimes:accepted",
         ]);
 
         try {
-
-            $installment
-                ->addMedia($request->proof_of_payment)
-                ->toMediaCollection('payments');
+            if ($request->hasFile('proof_of_payment')) {
+                $installment
+                    ->addMedia($request->proof_of_payment)
+                    ->toMediaCollection('payments');
+            }
 
             $installment->paid_at = now();
             $installment->save();
