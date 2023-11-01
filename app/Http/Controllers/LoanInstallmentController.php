@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Loan;
 use App\Models\LoanInstallment;
 use Exception;
 use Illuminate\Http\Request;
@@ -36,9 +37,15 @@ class LoanInstallmentController extends Controller
             $installment->paid_at = now();
             $installment->save();
 
-
         } catch (Exception $exception) {
             return redirect()->back()->with('error', $exception->getMessage());
+        }
+
+        if (LoanInstallment::whereNull('paid_at')->where('loan_id', $installment->loan_id)->count() == 0) {
+            $loan = Loan::find($installment->loan_id);
+            $loan->is_liquidated = 1;
+            $loan->status = 'SETTLED';
+            $loan->save();
         }
 
         // redirect to loan details

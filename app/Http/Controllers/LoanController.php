@@ -100,68 +100,133 @@ class LoanController extends Controller
             //$startDate = \Carbon\Carbon::parse($request->start_date);
             //$endDate = $startDate->copy()->addDays($daysBy);
 
-            $installments = $this->generateInstallments($loan, $finalBalance, $installmentAmount, $request->installment_quantity);
-
-            //            $installments = [];
-            //
-            //            for ($i = 1; $i <= $request->installment_quantity; $i++) {
-            //
-            //                if ($installmentAmount > $finalBalance) {
-            //                    $installmentAmount = $finalBalance;
-            //                }
-            //
-            //                // Calculate dates
-            //                if ($i > 1) {
-            //                    $startDate = $endDate;
-            //                    $endDate = $startDate->copy()->addDays($daysBy);
-            //                }
-            //
-            //                // substract current installment from final balance (pending amount to paid)
-            //                $finalBalance = $finalBalance - $installmentAmount;
-            //
-            //                $installment = LoanInstallment::create([
-            //                    'loan_id' => $loan->id,
-            //                    'start_date' => $startDate,
-            //                    'end_date' => $endDate,
-            //                    'amount' => $installmentAmount,
-            //                    'balance' => $finalBalance,
-            //                ]);
-            //
-            //                $installments[] = $installment;
-            //            }
+            if ($loan->installment_period == 'MONTHLY') {
+                $installments = $this->generateMonthlyPayments($loan, $finalBalance, $installmentAmount);
+                //$installments = $this->generateInstallments($loan, $finalBalance, $installmentAmount, $request->installment_quantity);
+            } else {
+                $installments = $this->generateBiweeklyPayments($loan, $finalBalance, $installmentAmount);
+            }
 
             // se crea el PDF
-            $this->generatePdfs($loan, $installments);
+            //$this->generatePdfs($loan, $installments);
 
             DB::commit();
 
-            return redirect(route('loan.index'))->with('message', 'Prestamo creado con exito')->with('class', 'bg-teal-600');
+            $message = 'Prestamo creado con exito';
+            $cssClass = "bg-teal-600";
         } catch (Exception $e) {
             DB::rollBack();
 
-            return redirect(route('loan.index'))->with('message', $e->getMessage())->with('class', 'bg-red-600');
+            $message = $e->getMessage();
+            $cssClass = "bg-red-600";
         }
+
+        return redirect(route('loan.index'))->with('message', $message)->with('class', $cssClass);
+    }
+
+    private function generateMonthlyPayments(Loan $loan, $finalBalance, $installmentAmount)
+    {
+        $paymentsNums = $loan->duration_unit;
+        $currentBalance = $finalBalance;
+
+        $installments = [];
+
+        for ($pi = 1; $pi <= $paymentsNums; $pi++) {
+            // initial date is end of the month
+            if ($loan->start_date->day == $loan->start_date->copy()->endOfMonth()->day) {
+                if ($pi == 1) {
+                    $startDate = $loan->start_date;
+                } else {
+                    $startDate = $endDate->copy();
+                }
+                $nextMonth = $startDate->copy()->addDays(1);
+                $endDate = $nextMonth->endOfMonth();
+            } else {
+                if ($pi == 1) {
+                    $startDate = $loan->start_date;
+                } else {
+                    $startDate = $endDate->copy();
+                }
+                $endDate = $startDate->copy()->addMonths(1);
+            }
+
+            $currentBalance = $currentBalance - $installmentAmount;
+
+            $installment = LoanInstallment::create([
+                'loan_id' => $loan->id,
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+                'amount' => $installmentAmount,
+                'balance' => $currentBalance,
+            ]);
+
+            $installments[] = $installment;
+        }
+
+        return $installments;
+    }
+
+    private function generateBiweeklyPayments(Loan $loan, $finalBalance, $installmentAmount)
+    {
+        //throw new Exception('Installment period not implemented yet!');
+        $paymentsNums = $loan->duration_unit;
+        $currentBalance = $finalBalance;
+
+        $installments = [];
+
+        for ($pi = 1; $pi <= $paymentsNums; $pi++) {
+            // initial date is end of the month
+            if ($loan->start_date->day == $loan->start_date->copy()->addDays(15)->day) {
+                if ($pi == 1) {
+                    $startDate = $loan->start_date;
+                } else {
+                    $startDate = $endDate->copy();
+                }
+                $nextMonth = $startDate->copy()->addDays(1);
+                $endDate = $nextMonth->addDays(15);
+            } else {
+                if ($pi == 1) {
+                    $startDate = $loan->start_date;
+                } else {
+                    $startDate = $endDate->copy();
+                }
+                $endDate = $startDate->copy()->addDays(15);
+            }
+
+            $currentBalance = $currentBalance - $installmentAmount;
+
+            $installment = LoanInstallment::create([
+                'loan_id' => $loan->id,
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+                'amount' => $installmentAmount,
+                'balance' => $currentBalance,
+            ]);
+
+            $installments[] = $installment;
+        }
+
+        return $installments;
     }
 
     private function generateInstallments(Loan $loan, $finalBalance, $installmentAmount, $installmentQuantity): array
     {
         $startDate = $loan->start_date;
         $installments = [];
-        $installmentStartIn31 = false;
+        $installmentStartIsEndOfMonth = false;
 
         // Calculate end date based on the month
         if ($loan->installment_period == 'MONTHLY') {
-            if ($startDate->day == 31) {
-                // Loan starting on 31
-                $installmentStartIn31 = true;
-                $nextMonth = $startDate->copy()->addMonth();
-                $month = $nextMonth->month;
-                $daysBy = $nextMonth->month($month)->daysInMonth - 1;
-                $endDate = $startDate->copy()->addDays($daysBy);
+            if ($startDate->day == $startDate->copy()->endOfMonth()->day) {
+                // Loan starts at the end of month
+                $installmentStartIsEndOfMonth = true;
+                $nextMonth = $startDate->copy()->addDays(1);
+                $endDate = $nextMonth->endOfMonth();
             } else {
                 $month = $startDate->month;
                 $daysBy = $startDate->month($month)->daysInMonth - 1;
                 $endDate = $startDate->copy()->addDays($daysBy);
+                //$endDate = $startDate->copy()->addMonths(1)->subDays(1);
             }
         } else {
             throw new Exception('Installment period not implemented yet!');
@@ -177,11 +242,16 @@ class LoanController extends Controller
 
             // Calculate dates
             if ($i > 1) {
-                if ($installmentStartIn31) {
-                    $month = $installment->end_date->month;
-                    $daysBy = $startDate->month($month)->daysInMonth - 1;
-                    $startDate = $installment->end_date->endOfMonth();
-                    $endDate = $startDate->copy()->addDays($daysBy);
+                if ($installmentStartIsEndOfMonth) {
+                    // Si un prestamo comienza en fin de mes, todos los prestamos deben ser establecidos
+                    // a fin de mes, sin importar el calculo de dias, ej:
+                    // 31/10/2023 -> 30/11/2023
+                    // 30/11/2023 -> 31/12/2023
+                    // 31/12/2023 -> 31/01/2024
+                    // 31/01/2021 -> 29/02/2024 .. etc
+                    $startDate = $installment->end_date->copy();
+                    $nextMonth = $startDate->copy()->addDays(1);
+                    $endDate = $nextMonth->endOfMonth();
                 } else {
                     $startDate = $endDate->copy()->addDays(1);
                     $month = $endDate->month;
@@ -213,7 +283,56 @@ class LoanController extends Controller
 
         $loan = Loan::where('uuid', $uuid)->firstOrFail();
 
-        return view('loan.show', compact('loan'));
+        $table = "";
+        // $c = (int) $loan->amount; // Capital inicial
+        // $n = 4; // Numero de CUOTAS
+        // $i = ($loan->roi)/ 100; // Tasa de Interes
+
+        // //$a = $c*(($i)/ (  1 - pow((1+$i) , ($n)*-1) )); // Calcular Amortizacion
+        // $interest_amount = ($loan->roi / 100) * $loan->amount;
+        // //dump($interest_amount);
+        // $a = ($loan->amount + $interest_amount) / $n;
+
+        // $a = number_format($a,2,".",""); // Formatear numero a 2 decimales
+        // $saldo_inicial = $c;
+        // $saldo_inicial = number_format((float)$saldo_inicial,2,".",""); // Formatear numero a 2 decimales
+
+        // $table =  "<h2>TABLA DE AMORTIZACION</h2>";
+        // $table .= "<table class='table table-striped'>";
+        // $table .= "<td>No.</td>";
+        // $table .= "<td>Saldo Inicial</td>";
+        // $table .= "<td>Amortizacion</td>";
+        // $table .= "<td>Interes</td>";
+        // $table .= "<td>Abono Capital</td>";
+        // $table .= "<td>Saldo Final</td>";
+
+        // for($ix=1; $ix<=$n; $ix++){
+        //     $interes = $saldo_inicial*$i; // se calcula el interes para este ciclo
+        //     $interes = number_format((float)$interes,2,".",""); // Formatear numero a 2 decimales
+
+        //     $abono_capital = $a - $interes; // el abono a capital es la amortizacion menos el interes del ciclo
+        //     $abono_capital = number_format((float)$abono_capital,2,".",""); // Formatear numero a 2 decimales
+
+        //     $saldo_final = $saldo_inicial - $abono_capital;
+        //     $saldo_final = number_format((float)$saldo_final,2,".",""); // Formatear numero a 2 decimales
+
+        //     $table .= "<tr>";
+        //     $table .= "<td>".$ix."</td>";
+        //     $table .= "<td>".$saldo_inicial."</td>";
+        //     $table .= "<td>".$a."</td>";
+        //     $table .= "<td>".$interes."</td>";
+        //     $table .= "<td>".$abono_capital."</td>";
+        //     $table .= "<td>".$saldo_final."</td>";
+
+        //     $table .= "<tr>";
+
+        //     $saldo_inicial = $saldo_final;
+        //     $saldo_inicial = number_format((float)$saldo_inicial,2,".",""); // Formatear numero a 2 decimales
+        // }
+
+        // $table .= "</table>";
+
+        return view('loan.show', compact('loan', 'table'));
     }
 
     public function destroy(Loan $loan)
@@ -250,6 +369,7 @@ class LoanController extends Controller
     {
         if (auth()->user()->type == 'admin') {
             $loan->status = 'SETTLED';
+            $loan->is_liquidated = 1;
             $loan->save();
         }
 

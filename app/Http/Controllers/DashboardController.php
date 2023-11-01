@@ -47,6 +47,8 @@ class DashboardController extends Controller
         ]);
 
         $lendedTotal = Loan::whereBetween('start_date', [now()->copy()->startOfYear(), now()])->sum('amount');
+        // TODO: quizas necesito un campo del monto con el % de interes y asi sumo ese
+        $returnedTotal = Loan::whereStatus('SETTLED')->whereBetween('start_date', [now()->copy()->startOfYear(), now()])->sum('amount');
 
         if ($fromDate) {
             $userToDate = $toDate ?? now();
@@ -90,7 +92,7 @@ class DashboardController extends Controller
         ]);
 
         return view('dashboard',
-            compact( 'totalClients', 'chart1', 'chart2', 'chart3', 'chart4', 'lendedTotal')
+            compact( 'totalClients', 'chart1', 'chart2', 'chart3', 'chart4', 'lendedTotal', 'returnedTotal')
         );
     }
 }
