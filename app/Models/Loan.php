@@ -28,6 +28,7 @@ class Loan extends Model implements HasMedia
         'installment_period',
         'created_by',
         'start_date',
+        'is_liquidated',
     ];
 
     public $dates = [

@@ -23,6 +23,10 @@
                         <p>Total <strong>$ {{ $lendedTotal }}</strong></p>
                     </div>
 
+                    <div class="py-6 px-4 text-center">
+                        <p>Total devuelto <strong>$ {{ $returnedTotal }}</strong></p>
+                    </div>
+
                     <div class="">
                         <form action="" class="flex">
                             <x-text-input

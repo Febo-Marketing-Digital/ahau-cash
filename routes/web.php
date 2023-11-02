@@ -13,6 +13,8 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 
+use App\Http\Controllers\LoanV2Controller;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -27,6 +29,12 @@ use Illuminate\Support\Facades\Storage;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/loans-v2', [LoanV2Controller::class, 'index']);
+Route::get('/loans-v2/create', [LoanV2Controller::class, 'create']);
+Route::post('/loans-v2/create', [LoanV2Controller::class, 'store']);
+Route::get('/loans-v2/table', [LoanV2Controller::class, 'table']);
+Route::get('/loans-test', [LoanV2Controller::class, 'test']);
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
