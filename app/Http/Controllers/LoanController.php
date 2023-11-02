@@ -108,7 +108,7 @@ class LoanController extends Controller
             }
 
             // se crea el PDF
-            //$this->generatePdfs($loan, $installments);
+            $this->generatePdfs($loan, $installments);
 
             DB::commit();
 
@@ -369,7 +369,7 @@ class LoanController extends Controller
     {
         if (auth()->user()->type == 'admin') {
             $loan->status = 'SETTLED';
-            $loan->is_liquidated = 1;
+            // $loan->is_liquidated = 1;
             $loan->save();
         }
 

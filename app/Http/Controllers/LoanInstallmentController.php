@@ -43,7 +43,7 @@ class LoanInstallmentController extends Controller
 
         if (LoanInstallment::whereNull('paid_at')->where('loan_id', $installment->loan_id)->count() == 0) {
             $loan = Loan::find($installment->loan_id);
-            $loan->is_liquidated = 1;
+            //$loan->is_liquidated = 1;
             $loan->status = 'SETTLED';
             $loan->save();
         }
