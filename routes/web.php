@@ -26,17 +26,17 @@ use App\Http\Controllers\LoanV2Controller;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route::get('/', function () {
+//     return view('welcome');
+// });
 
-Route::get('/loans-v2', [LoanV2Controller::class, 'index']);
-Route::get('/loans-v2/create', [LoanV2Controller::class, 'create']);
-Route::post('/loans-v2/create', [LoanV2Controller::class, 'store']);
-Route::get('/loans-v2/table', [LoanV2Controller::class, 'table']);
-Route::get('/loans-test', [LoanV2Controller::class, 'test']);
+// Route::get('/loans-v2', [LoanV2Controller::class, 'index']);
+// Route::get('/loans-v2/create', [LoanV2Controller::class, 'create']);
+// Route::post('/loans-v2/create', [LoanV2Controller::class, 'store']);
+// Route::get('/loans-v2/table', [LoanV2Controller::class, 'table']);
+// Route::get('/loans-test', [LoanV2Controller::class, 'test']);
 
-Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
