@@ -40,7 +40,7 @@ Route::get('/', [DashboardController::class, 'index'])->middleware(['auth', 'ver
 
 Route::get('/xvzoe', function () {
     return view('invite');
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->name('invite.landing');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
