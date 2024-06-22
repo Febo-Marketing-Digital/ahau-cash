@@ -38,6 +38,10 @@ use App\Http\Controllers\LoanV2Controller;
 
 Route::get('/', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::get('/xvzoe', function () {
+    return view('invite');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -85,4 +89,4 @@ Route::middleware('auth')->group(function () {
     Route::get('test/render/{loan}/contract', [TestController::class, 'renderNote']);
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
