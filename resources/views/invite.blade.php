@@ -48,12 +48,10 @@
         {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/maphilight/1.4.2/jquery.maphilight.min.js"
             integrity="sha512-1YiTT24MNHA6DRzyu+w9F5Egc8evYlyEnzSSTD4/M7q42xEb5fSpNgn0+1CPy3evubHs3xdlh8uXgae0DOhR7Q=="
             crossorigin="anonymous" referrerpolicy="no-referrer"></script> --}}
-        <script src="js/imageMapResizer.min.js"></script>
         <script>
-            $(document).ready(function() {
-                //$('img[usemap]').maphilight();
-                $('map').imageMapResize();
-            });
+            // $(document).ready(function() {
+            //     $('img[usemap]').maphilight();
+            // });
         </script>
 </body>
 
