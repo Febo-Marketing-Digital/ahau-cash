@@ -45,7 +45,10 @@ class LoanInstallment extends Model implements HasMedia
     {
         if ($this->hasMedia('notes')) {
             $mediaItems = $this->getMedia('notes');
-            $linkUrl = app()->environment('local') ? '' : $mediaItems[0]->getTemporaryUrl(Carbon::now()->addMinutes(10));
+            $linkUrl = "";
+            if (!empty($mediaItems[0])) {
+                $linkUrl = app()->environment('local') ? $mediaItems[0]->getFullUrl() : $mediaItems[0]->getTemporaryUrl(Carbon::now()->addMinutes(10));
+            }
             return '<a class="btn btn-dark" target="_blank" title="descargar PDF" href="' . $linkUrl . '" download><i class="bi bi-arrow-down-square"></i></a>';
         } else {
             return 'N/A';
