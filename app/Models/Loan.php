@@ -63,7 +63,7 @@ class Loan extends Model implements HasMedia
             $renderText = '';
             foreach ($mediaItems as $mediaItem) {
                 $linkText = $mediaItem->getCustomProperty('note_name') ?? $mediaItem->name;
-                $linkUrl = app()->environment('local') ? '' : $mediaItem->getTemporaryUrl(Carbon::now()->addMinutes(10));
+                $linkUrl = app()->environment('local') ? $mediaItem->getFullUrl() : $mediaItem->getTemporaryUrl(Carbon::now()->addMinutes(10));
                 $renderText .= '<p>DESCARGAR PDF: <a target="_blank" href=' . $linkUrl . ' download>' . $linkText . '</a></p>';
             }
 

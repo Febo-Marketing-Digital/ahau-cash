@@ -14,7 +14,7 @@ class RegenerateMediaFilesForLoan extends Command
      *
      * @var string
      */
-    protected $signature = 'ahau-cash:regenerate-media-files {loan_uuid}';
+    protected $signature = 'ahau-cash:regenerate-media-files {uuid?}';
 
     /**
      * The console command description.
@@ -30,25 +30,50 @@ class RegenerateMediaFilesForLoan extends Command
      */
     public function handle(CreatePDF $createPDF)
     {
-        $loan = Loan::where('uuid', '=', $this->argument('loan_uuid'))->first();
+        $query = Loan::query();
 
-        if ($loan) {
-            $mediaFiles = $loan->getMedia('notes');
-            foreach ($mediaFiles as $mediaFile) {
-                $mediaFile->delete();
-            }
-
-            $installments = LoanInstallment::where('loan_id', $loan->id)->get();
-
-            foreach ($installments as $installment) {
-                $mediaFiles = $installment->getMedia('notes');
-                $mediaFiles[0]->delete();
-            }
-
-            $createPDF->execute($loan, $installments);
-        } else {
-            $this->info('no existe un prestamo con el UUID ' . $this->argument('loan_uuid'));
+        // process one or all of loans
+        if ($uuid = $this->argument('uuid')) {
+            $query->where('uuid', '=', $uuid);
         }
+
+        // if ($dateInput = $this->argument('dates')) {
+        //     $dates = explode(',', $dateInput);
+        //     dump($dates);
+        // }
+
+        $loans = $query->get();
+
+        $total = 0;
+
+        if ($loans) {
+            foreach ($loans as $loan) {
+                $mediaFiles = $loan->getMedia('notes');
+                foreach ($mediaFiles as $mediaFile) {
+                    $mediaFile->delete();
+                }
+
+                $installments = LoanInstallment::where('loan_id', $loan->id)->get();
+
+                foreach ($installments as $installment) {
+                    $mediaFiles = $installment->getMedia('notes');
+
+                    if ($mediaFiles->count() > 0) {
+                        foreach ($mediaFiles as $file) {
+                            $file->delete();
+                        }
+                    }
+                }
+
+                $createPDF->execute($loan, $installments);
+
+                $total++;
+            }
+        } else {
+            $this->warn('No loans available for processing.');
+        }
+
+        $this->info('Process conclude. Loans: ' . $total);
 
         return Command::SUCCESS;
     }

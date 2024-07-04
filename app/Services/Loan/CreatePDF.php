@@ -5,6 +5,7 @@ namespace App\Services\Loan;
 use App\Models\Loan;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\File;
 
 class CreatePDF
 {
@@ -24,10 +25,10 @@ class CreatePDF
             'installments_total' => $loan->installments->count(),
         ];
         $pdf = Pdf::loadView('loan.pdf.contract_note', $data);
-        $pdf->save(storage_path('loans/'.$loan->uuid . "-contract.pdf"));
+        $pdf->save(storage_path('loans/' . $loan->uuid . "-contract.pdf"));
 
         $loan
-            ->addMedia(storage_path('loans/'.$loan->uuid . "-contract.pdf"))
+            ->addMedia(storage_path('loans/' . $loan->uuid . "-contract.pdf"))
             ->withCustomProperties(['note_type' => 'contract_note', 'note_name' => 'Contrato'])
             ->toMediaCollection('notes');
 
@@ -45,10 +46,10 @@ class CreatePDF
         ];
 
         $pdf = Pdf::loadView('loan.pdf.loan_note', $data);
-        $pdf->save(storage_path('loans/'.$loan->uuid . "-total.pdf"));
+        $pdf->save(storage_path('loans/' . $loan->uuid . "-total.pdf"));
 
         $loan
-            ->addMedia(storage_path('loans/'.$loan->uuid . "-total.pdf"))
+            ->addMedia(storage_path('loans/' . $loan->uuid . "-total.pdf"))
             ->withCustomProperties(['note_type' => 'total_amount_note', 'note_name' => 'Pagaré Total'])
             ->toMediaCollection('notes');
 
@@ -64,15 +65,15 @@ class CreatePDF
         ];
 
         $pdf = Pdf::loadView('loan.pdf.interest_note', $data);
-        $pdf->save(storage_path('loans/'.$loan->uuid . "-interest.pdf"));
+        $pdf->save(storage_path('loans/' . $loan->uuid . "-interest.pdf"));
 
         $loan
-            ->addMedia(storage_path('loans/'.$loan->uuid . "-interest.pdf"))
+            ->addMedia(storage_path('loans/' . $loan->uuid . "-interest.pdf"))
             ->withCustomProperties(['note_type' => 'total_interests_note', 'note_name' => 'Pagaré Intereses'])
             ->toMediaCollection('notes');
 
         // 4 .- se generan todos los pagares de los pagos mensuales o quincenales
-        foreach($installments as $key => $installment) {
+        foreach ($installments as $key => $installment) {
             $data = [
                 'loan_installment_amount' => $installment->amount,
                 'roi' => $loan->roi . '%',
@@ -83,12 +84,21 @@ class CreatePDF
             ];
 
             $pdfInstallment = Pdf::loadView('loan.pdf.installment_note', $data);
-            $pdfInstallment->save(storage_path('loans/'.$loan->uuid . "-" . $key . "-.pdf"));
+            $pdfInstallment->save(storage_path('loans/' . $loan->uuid . "-" . $key . "-.pdf"));
 
             $installment
-                ->addMedia(storage_path('loans/'.$loan->uuid . "-" . $key . "-.pdf"))
+                ->addMedia(storage_path('loans/' . $loan->uuid . "-" . $key . "-.pdf"))
                 ->withCustomProperties(['note_type' => 'installment_note', 'note_name' => 'Pagaré ' . $key])
                 ->toMediaCollection('notes');
+        }
+    }
+
+    private function createDirectory($folder)
+    {
+        $path = storage_path('loans/' . $folder);
+
+        if (!File::isDirectory($path)) {
+            File::makeDirectory($path, 0777, true, true);
         }
     }
 }
