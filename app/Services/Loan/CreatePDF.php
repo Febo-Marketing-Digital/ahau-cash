@@ -43,6 +43,7 @@ class CreatePDF
             'address' => $loan->user->address,
             'created_date' => now()->format('d M Y'), // change this
             'year_to_convert' => now()->format('Y'),
+            'start_date' => $loan->start_date,
         ];
 
         $pdf = Pdf::loadView('loan.pdf.loan_note', $data);
@@ -62,6 +63,7 @@ class CreatePDF
             'address' => $loan->user->address,
             'created_date' => now()->format('d M Y'), // change this
             'year_to_convert' => now()->format('Y'),
+            'start_date' => $loan->start_date,
         ];
 
         $pdf = Pdf::loadView('loan.pdf.interest_note', $data);
@@ -81,6 +83,7 @@ class CreatePDF
                 'user' => $loan->user->toArray(),
                 'address' => $loan->user->address,
                 'end_date' => $installment->end_date,
+                'start_date' => $loan->start_date,
             ];
 
             $pdfInstallment = Pdf::loadView('loan.pdf.installment_note', $data);
