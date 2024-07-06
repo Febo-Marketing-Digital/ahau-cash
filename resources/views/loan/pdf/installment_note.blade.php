@@ -9,6 +9,7 @@ $endDate = $fecha = \Carbon\Carbon::parse($end_date);
 $spaEndMonth = $spaMonths[$endDate->format('n') - 1];
 $localizedEndDate = $endDate->format('d') . ' de ' . $spaEndMonth . ' de ' . $endDate->format('Y');
 
+$yearToConvert = $endDate->format('Y');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -38,7 +39,7 @@ $localizedEndDate = $endDate->format('d') . ' de ' . $spaEndMonth . ' de ' . $en
         represente la cantidad de ${{ $loan_installment_amount }}
         ({{ strtoupper(amount_in_words($loan_installment_amount)) }} 00/100 M.N.), en el domicilio ubicado en Cerrada de
         Niños Héroes número 26, interior B, Colonia San Pedro Mártir, Alcaldía Tlalpan en Ciudad de México, en fecha
-        {{ $localizedEndDate }} (dos mil veintitrés).</p>
+        {{ $localizedEndDate }} ({{ number_in_words($yearToConvert) }}).</p>
 
     <p>Valor recibido a mi entera satisfacción, en otro sentido, desde la fecha de vencimiento de este documento hasta
         el día de su liquidación causará intereses moratorios al tipo de 10% (DIEZ POR CIENTO) MENSUAL pagadero

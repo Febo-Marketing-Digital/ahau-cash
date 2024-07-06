@@ -16,6 +16,14 @@ if (!function_exists('amount_in_words')) {
     }
 }
 
+if (!function_exists('number_in_words')) {
+    function number_in_words($amount)
+    {
+        $formatter = new \NumberFormatter('es_MX', \NumberFormatter::SPELLOUT);
+        return $formatter->format($amount);
+    }
+}
+
 if (!function_exists('get_state_by_city')) {
     function get_state_by_city(string $city)
     {

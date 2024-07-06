@@ -5,6 +5,10 @@ $startDate = \Carbon\Carbon::parse($start_date);
 $spaMonth = $spaMonths[$startDate->format('n') - 1];
 $localizedDate = $startDate->format('d') . ' de ' . $spaMonth . ' de ' . $startDate->format('Y');
 
+$endDate = $startDate->addMonths($loan_duration);
+$spaEndMonth = $spaMonths[$endDate->format('n') - 1];
+$localizedEndDate = $endDate->format('d') . ' de ' . $spaEndMonth . ' de ' . $endDate->format('Y');
+$yearToConvert = $endDate->format('Y');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -32,9 +36,10 @@ $localizedDate = $startDate->format('d') . ' de ' . $spaMonth . ' de ' . $startD
 
     <p>Debo y pagaré incondicionalmente a la orden de ANTONIO EMMANUEL FLORES ÁLVAREZ BUYLLA o a quien sus derechos
         represente la cantidad de ${{ $loan_insterest_amount }}
-        (MONTO_LETRAS PESOS 00/100 M.N.), en el domicilio ubicado en Cerrada de Niños Héroes número 26, interior B,
-        Colonia San Pedro Mártir, Alcaldía Tlalpan en Ciudad de México, en fecha {{ $localizedDate }}
-        ({{ amount_in_words($year_to_convert) }}).</p>
+        ({{ strtoupper(amount_in_words($loan_insterest_amount)) }} 00/100 M.N.), en el domicilio ubicado en Cerrada de
+        Niños Héroes número 26, interior B,
+        Colonia San Pedro Mártir, Alcaldía Tlalpan en Ciudad de México, en fecha {{ $localizedEndDate }}
+        ({{ number_in_words($yearToConvert) }}).</p>
 
     <p>Valor recibido a mi entera satisfacción, en otro sentido, desde la fecha de vencimiento de este documento hasta
         el día de su liquidación causará intereses moratorios al tipo de 10% (DIEZ POR CIENTO) mensual pagadero

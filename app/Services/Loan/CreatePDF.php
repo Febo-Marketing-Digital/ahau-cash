@@ -44,6 +44,7 @@ class CreatePDF
             'created_date' => now()->format('d M Y'), // change this
             'year_to_convert' => now()->format('Y'),
             'start_date' => $loan->start_date,
+            'loan_duration' => $loan->duration_unit,
         ];
 
         $pdf = Pdf::loadView('loan.pdf.loan_note', $data);
@@ -64,6 +65,7 @@ class CreatePDF
             'created_date' => now()->format('d M Y'), // change this
             'year_to_convert' => now()->format('Y'),
             'start_date' => $loan->start_date,
+            'loan_duration' => $loan->duration_unit,
         ];
 
         $pdf = Pdf::loadView('loan.pdf.interest_note', $data);
