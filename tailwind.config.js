@@ -1,4 +1,5 @@
 const defaultTheme = require('tailwindcss/defaultTheme');
+const { addIconSelectors } = require("@iconify/tailwind");
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -16,5 +17,20 @@ module.exports = {
         },
     },
 
-    plugins: [require('@tailwindcss/forms')],
+    daisyui: {
+        styled: true,
+        themes: ['light', 'dark', 'corporate'],
+        base: true,
+    },
+
+    plugins: [
+        require('@tailwindcss/forms'),
+        require('@tailwindcss/typography'),
+        require('daisyui'),
+        // Iconify plugin for clean selectors, requires writing a list of icon sets to load
+        // Icons usage in HTML:
+        //  <span class="iconify mdi-light--home"></span>
+        //  <span class="iconify-color vscode-icons--file-type-tailwind"></span>
+        addIconSelectors(["lucide"]),
+    ],
 };

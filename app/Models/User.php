@@ -62,6 +62,16 @@ class User extends Authenticatable implements HasMedia
         return Str::limit($fullName, 20);
     }
 
+    public function isInvestor(): bool
+    {
+        return $this->type === 'investor';
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->type === 'admin';
+    }
+
     public function phonenumbers(): HasMany
     {
         return $this->hasMany(UserPhonenumber::class);

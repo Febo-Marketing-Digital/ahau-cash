@@ -14,8 +14,8 @@ return new class extends Migration
     public function up()
     {
         Schema::table('loans', function (Blueprint $table) {
-            $table->unsignedBigInteger('created_by')->nullable();
-            $table->foreign('created_by')->references('id')->on('users')->onDelete(\DB::raw('set null'));
+            //$table->unsignedBigInteger('created_by')->nullable();
+            //$table->foreign('created_by')->references('id')->on('users')->onDelete(\DB::raw('set null'));
         });
     }
 
@@ -27,7 +27,7 @@ return new class extends Migration
     public function down()
     {
         Schema::table('loans', function (Blueprint $table) {
-            $table->removeColumn('created_by');
+            //$table->removeColumn('created_by');
         });
     }
 };

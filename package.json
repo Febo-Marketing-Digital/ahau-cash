@@ -5,10 +5,14 @@
         "build": "vite build"
     },
     "devDependencies": {
+        "@iconify-json/lucide": "^1.2.20",
+        "@iconify/tailwind": "^1.2.0",
         "@tailwindcss/forms": "^0.5.2",
+        "@tailwindcss/typography": "^0.5.15",
         "alpinejs": "^3.4.2",
         "autoprefixer": "^10.4.2",
         "axios": "^1.1.2",
+        "daisyui": "^4.12.22",
         "laravel-vite-plugin": "^0.6.0",
         "lodash": "^4.17.19",
         "postcss": "^8.4.6",

@@ -1,1 +1,1 @@
-<img src="/images/ahaucash-color.png" alt="Ahau Cash" style="max-width: 150px">
+<img src="/images/ahaucash-color.png" alt="Ahau Cash" {{ $attributes->merge(['class' => 'w-auto']) }}>

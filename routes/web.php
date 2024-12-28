@@ -3,6 +3,7 @@
 use App\Http\Controllers\BankController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DocumentationController;
+use App\Http\Controllers\InvestorController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\LoanController;
 use App\Http\Controllers\LoanInstallmentController;
@@ -38,9 +39,9 @@ use App\Http\Controllers\LoanV2Controller;
 
 Route::get('/', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/xvzoe', function () {
-    return view('invite');
-})->name('invite.landing');
+// Route::get('/xvzoe', function () {
+//     return view('invite');
+// })->name('invite.landing');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -84,6 +85,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/client/{user}/documentation', [DocumentationController::class, 'edit'])->name('documentation.edit');
     Route::put('/client/{user}/documentation', [DocumentationController::class, 'update'])->name('documentation.update');
     Route::delete('/client/{user}/documentation', [DocumentationController::class, 'destroy'])->name('documentation.destroy');
+
+    Route::get('/investors', [InvestorController::class, 'index'])->name('investor.index');
+    // Route::get('/investor', [UserController::class, 'create'])->name('client.create');
+    // Route::post('/investor', [UserController::class, 'store'])->name('client.store');
+    // Route::get('/investor/{user}', [UserController::class, 'edit'])->name('client.edit');
+    // Route::patch('/investor/{user}', [UserController::class, 'update'])->name('client.update');
+    // Route::get('/investor/{user}/delete', [UserController::class, 'delete'])->name('client.delete');
 
     Route::get('test', [LoanController::class, 'testPdfDownload']);
     Route::get('test/render/{loan}/contract', [TestController::class, 'renderNote']);
