@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ACLController;
 use App\Http\Controllers\BankController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DocumentationController;
@@ -87,14 +88,23 @@ Route::middleware('auth')->group(function () {
     Route::delete('/client/{user}/documentation', [DocumentationController::class, 'destroy'])->name('documentation.destroy');
 
     Route::get('/investors', [InvestorController::class, 'index'])->name('investor.index');
-    // Route::get('/investor', [UserController::class, 'create'])->name('client.create');
-    // Route::post('/investor', [UserController::class, 'store'])->name('client.store');
+    Route::get('/investor', [InvestorController::class, 'create'])->name('investor.create');
+    Route::post('/investor', [InvestorController::class, 'store'])->name('investor.store');
     // Route::get('/investor/{user}', [UserController::class, 'edit'])->name('client.edit');
     // Route::patch('/investor/{user}', [UserController::class, 'update'])->name('client.update');
     // Route::get('/investor/{user}/delete', [UserController::class, 'delete'])->name('client.delete');
 
     Route::get('test', [LoanController::class, 'testPdfDownload']);
     Route::get('test/render/{loan}/contract', [TestController::class, 'renderNote']);
+
+    Route::middleware('role_or_permission:view acl')->group(function () {
+        Route::get('/settings/acl', [ACLController::class, 'index'])->name('acl.index');
+        Route::put('/settings/acl/permission/{permission}', [ACLController::class, 'updatePermissions'])->name('acl.update.permissions');
+        Route::get('/settings/acl/role', [ACLController::class, 'createRole'])->name('acl.role.create');
+        Route::post('/settings/acl/role', [ACLController::class, 'storeRole'])->name('acl.role.store');
+        Route::get('/settings/acl/permission', [ACLController::class, 'createPermission'])->name('acl.permission.create');
+        Route::post('/settings/acl/permission', [ACLController::class, 'storePermission'])->name('acl.permission.store');
+    });
 });
 
 require __DIR__ . '/auth.php';

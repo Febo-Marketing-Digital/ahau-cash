@@ -7,7 +7,7 @@
 
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6 mb-4">
-            <a href="{{ route('client.create') }}" class="btn btn-outline btn-primary">
+            <a href="{{ route('investor.create') }}" class="btn btn-primary">
                 Nuevo inversionista
             </a>
         </div>
@@ -34,7 +34,7 @@
                                 <div class="mt-3 block w-auto">
                                     <x-primary-button>{{ __('Filter') }}</x-primary-button>
 
-                                    <a href="{{ route('client.index') }}">Limpiar filtro</a>
+                                    <a class="btn btn-outline btn-secondary" href="{{ route('investor.index') }}">Limpiar filtro</a>
                                 </div>
                             </form>
                             <div>
@@ -45,7 +45,7 @@
                                             <th><i class="bi bi-person"></i> Nombre Completo</th>
                                             <th><i class="bi bi-envelope-at"></i> E-mail</th>
                                             <th><i class="bi bi-phone"></i> Teléfono</th>
-                                            <th><i class="bi bi-calendar"></i> Cliente desde</th>
+                                            <th><i class="bi bi-calendar"></i> Inversionista desde</th>
                                             <th></th>
                                         </tr>
                                     </thead>
@@ -74,11 +74,11 @@
                                                     <span class="iconify lucide--circle-dollar-sign"></span>
                                                 </a>
                                                 @endif
-                                                @if(auth()->user()->type == 'admin')
-                                                <a class="btn btn-error" title="Eliminar cliente" href="{{ route('client.delete', $client) }}" onclick="confirm('Seguro que desea eliminar este registro?');">
+                                                @can('delete investor')
+                                                <a class="btn btn-error" title="Eliminar inversionista" href="#" onclick="confirm('Seguro que desea eliminar este registro?');">
                                                     <span class="iconify lucide--trash-2"></span>
                                                 </a>
-                                                @endif
+                                                @endcan
                                             </td>
                                         </tr>
                                         @endforeach

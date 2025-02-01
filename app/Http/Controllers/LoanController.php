@@ -56,6 +56,10 @@ class LoanController extends Controller
             });
         }
 
+        if ($clients->isEmpty()) {
+            return redirect()->route('client.create')->with('message', 'warning|Debe registrar al menos un cliente');
+        }
+
         return view('loan.create', compact('clients'));
     }
 
@@ -75,17 +79,20 @@ class LoanController extends Controller
 
             //LoanTypeEnum::from($request->loan_type)); // Objeto de tipo Enum con value and label
 
+            $loanStatus = auth()->user()->can('approve loan') ? 'APPROVED' : 'PENDING';
+
             // se crea el prestamo en status pendiente de activacion
             $loan = Loan::create([
                 'uuid' => Str::uuid(),
                 'user_id' => $request->client,
+                //'group_loan_id' => $request->group_loan_id, // make user_id nullable and create a model GroupLoan which has many users and belongs to one loan
                 'type' => $request->loan_type,
                 'amount' => $request->amount,
                 'duration_unit' => $request->installment_quantity, // 12
                 'duration_period' => 'MONTH', // $request->installment_period: TODO cambiar este campo o crear uno nuevo
                 'roi' => $request->loan_roi,
                 'installment_period' => $request->installment_period,
-                'status' => auth()->user()->type == 'admin' ? 'APPROVED' : 'PENDING',
+                'status' => $loanStatus,
                 'created_by' => auth()->user()->id,
                 'start_date' => $request->start_date ?? now(),
             ]);
@@ -137,7 +144,7 @@ class LoanController extends Controller
                 if ($pi == 1) {
                     $startDate = $loan->start_date;
                 } else {
-                    $startDate = $endDate->copy();
+                    $startDate = $endDate->copy(); // this is necessary?
                 }
                 $nextMonth = $startDate->copy()->addDays(1);
                 $endDate = $nextMonth->endOfMonth();
@@ -145,7 +152,7 @@ class LoanController extends Controller
                 if ($pi == 1) {
                     $startDate = $loan->start_date;
                 } else {
-                    $startDate = $endDate->copy();
+                    $startDate = $endDate->copy(); // this is necessary?
                 }
                 $endDate = $startDate->copy()->addMonths(1);
             }

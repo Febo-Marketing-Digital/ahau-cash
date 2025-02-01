@@ -15,7 +15,7 @@ class InvestorController extends Controller
 {
     public function index(Request $request)
     {
-        $investors = User::query();
+        $investors = User::byType('investor');
         $investors->with('phonenumbers');
 
         if ($filter = $request->get('name')) {
@@ -25,9 +25,7 @@ class InvestorController extends Controller
             });
         }
 
-        $investors = $investors->where('type', '=', 'investor')
-            ->orderBy('name')
-            ->paginate(25);
+        $investors = $investors->orderBy('name')->paginate(25);
 
         return view('investor.index', compact('investors'));
     }
@@ -43,6 +41,9 @@ class InvestorController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'lastname' => ['required', 'string', 'max:255'],
             'email' => ['string', 'email', 'max:255', 'unique:' . User::class],
+            'password' => ['required', 'string', 'max:255', 'min:8', 'max:12'],
+            'city' => ['required', 'string', 'max:255'],
+            'state' => ['required', 'string', 'max:255'],
         ]);
 
         try {
@@ -54,8 +55,8 @@ class InvestorController extends Controller
                 'birthdate' => $request->birthdate,
                 'email' => $request->email ?? "",
                 'gender' => $request->gender,
-                'password' => bcrypt('secret'),
-                'type' => 'client',
+                'password' => bcrypt($request->password),
+                'type' => 'investor',
             ]);
 
             $phoneNumberType = strtoupper($request->phonenumber_type);
@@ -74,7 +75,7 @@ class InvestorController extends Controller
                 'locality' => $request->locality,
                 'province' => $request->province,
                 'city' => $request->city,
-                'state' => $request->city == 'CMDX' ? 'Ciudad de México' : 'México',
+                'state' => $request->state,
                 'postal_code' => $request->postal_code
             ]);
 
@@ -82,11 +83,10 @@ class InvestorController extends Controller
         } catch (Exception $exception) {
             DB::rollBack();
             //dd($exception->getMessage());
-            return redirect()->back();
+            return redirect()->back()->with('message', 'error|Hubo un error creando al inversionista.');
         }
 
-        // redirect to documentation module
-        return redirect(route('documentation.edit', ['user' => $user->id]));
+        return redirect()->route('investors.index')->with('message', 'success|Inversionista creado con éxito.');
     }
 
     public function edit(User $user)

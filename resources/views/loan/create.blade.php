@@ -35,10 +35,10 @@
                             <x-input-label for="client" :value="__('Client')" />
                             <select name="client" id="client">
                                 @if($clients->count() > 1)
-                                <option value="" selected>Selecciona a un cliente</option>
-                                @foreach($clients as $client)
-                                    <option value="{{ $client->id }}">{{ $client->fullname() }}</option>
-                                @endforeach
+                                    <option value="" selected>Selecciona a un cliente</option>
+                                    @foreach($clients as $client)
+                                        <option value="{{ $client->id }}">{{ $client->fullname() }}</option>
+                                    @endforeach
                                 @else
                                     @php($client = $clients->first())
                                     <option value="{{ $client->id }}" selected>{{ $client->fullname() }}</option>

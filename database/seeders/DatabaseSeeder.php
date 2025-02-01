@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Role;
 
 class DatabaseSeeder extends Seeder
 {
@@ -15,7 +16,7 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         if (app()->environment('local')) {
-            \App\Models\User::factory()->create([
+            $admin = \App\Models\User::factory()->create([
                 'name' => 'Admin',
                 'lastname' => 'User',
                 'birthdate' => '1977-01-01',
@@ -34,8 +35,18 @@ class DatabaseSeeder extends Seeder
                 'password' => bcrypt('password'),
                 'type' => 'investor',
             ]);
-        } else {
+
             \App\Models\User::factory()->create([
+                'name' => 'Client',
+                'lastname' => 'User',
+                'birthdate' => '1977-01-01',
+                'gender' => 'F',
+                'email' => 'client@email.com',
+                'password' => bcrypt('password'),
+                'type' => 'client',
+            ]);
+        } else {
+            $admin = \App\Models\User::factory()->create([
                 'name' => 'Antonio',
                 'lastname' => 'Flores',
                 'birthdate' => '1980-01-01',
@@ -45,5 +56,13 @@ class DatabaseSeeder extends Seeder
                 'type' => 'admin',
             ]);
         }
+
+        $roleAdmin = Role::create(['name' => 'Admin']);
+        $roleStaff = Role::create(['name' => 'Staff']);
+        $roleClient = Role::create(['name' => 'Client']);
+        $roleInvestor = Role::create(['name' => 'Investor']);
+        $roleSuperAdmin = Role::create(['name' => 'Super-Admin']);
+
+        $admin->assignRole($roleSuperAdmin);
     }
 }

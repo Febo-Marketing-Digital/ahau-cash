@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Loan;
 use Illuminate\Http\Request;
 use LaravelDaily\LaravelCharts\Classes\LaravelChart;
+use Spatie\Permission\Models\Permission;
 
 class DashboardController extends Controller
 {
@@ -17,11 +18,6 @@ class DashboardController extends Controller
      */
     public function index(Request $request)
     {
-        // move this to the dashboard component
-        if (auth()->user()->type == 'staff') {
-            return view('dashboard_staff');
-        }
-
-        return view('dashboard');
+        return view('dashboard.index');
     }
 }

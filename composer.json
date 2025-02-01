@@ -15,7 +15,8 @@
         "laraveldaily/laravel-charts": "^0.1.29",
         "league/flysystem-aws-s3-v3": "^3.10",
         "spatie/enum": "^3.13",
-        "spatie/laravel-medialibrary": "^10.0.0"
+        "spatie/laravel-medialibrary": "^10.0.0",
+        "spatie/laravel-permission": "^6.10"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

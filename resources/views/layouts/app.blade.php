@@ -40,6 +40,8 @@
         </header>
         @endif
 
+        {!! display_alert() !!}
+
         <!-- Page Content -->
         <main>
             {{ $slot }}

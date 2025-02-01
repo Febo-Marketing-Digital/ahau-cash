@@ -15,7 +15,7 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
-        $clients = User::query();
+        $clients = User::byType('client');
         $clients->with('phonenumbers');
 
         if ($filter = $request->get('name')) {
@@ -25,9 +25,12 @@ class UserController extends Controller
             });
         }
 
-        $clients = $clients->where('type', '=', 'client')
-            ->orderBy('name')
-            ->paginate(25);
+        if (auth()->user()->type == 'investor') {
+            // Add a filter for only show users from an investor
+            // 1 - with an investor_id in the usres table or 2 - with a many to many relationship (or many to one)
+        }
+
+        $clients = $clients->orderBy('name')->paginate(25);
 
         //$sortedResult = $clients->getCollection()->sortBy('name')->values();
         //$clients->setCollection($sortedResult);

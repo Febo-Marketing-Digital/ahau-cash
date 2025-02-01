@@ -7,7 +7,9 @@
             <a class="btn btn-ghost" href="{{ route('dashboard') }}">Dashboard</a>
             <a class="btn btn-ghost" href="{{ route('client.index') }}">Clientes</a>
             <a class="btn btn-ghost" href="{{ route('loan.index') }}">{{ __('Loans') }}</a>
+            @can('view investors')
             <a class="btn btn-ghost" href="{{ route('investor.index') }}">{{ __('Investors') }}</a>
+            @endcan
             <a class="btn btn-ghost" href="#">Reportes</a>
         </div>
     </div>
@@ -34,14 +36,21 @@
                 </li>
                 <li><a>Ajustes</a></li> -->
 
-                @if(auth()->user()->type == 'admin')
+                @can('view staff')
                 <x-dropdown-link :href="route('staff.index')">
                     {{ __('Staff') }}
                 </x-dropdown-link>
+                @endcan
+                @can('view banks')
                 <x-dropdown-link :href="route('bank.index')">
                     {{ __('Banks') }}
                 </x-dropdown-link>
-                @endif
+                @endcan
+                @can('view acl')
+                <x-dropdown-link :href="route('acl.index')">
+                    {{ __('ACL') }}
+                </x-dropdown-link>
+                @endcan
 
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf

@@ -21,6 +21,8 @@ module.exports = {
         styled: true,
         themes: ['light', 'dark', 'corporate'],
         base: true,
+        styled: true,
+        utils: true,
     },
 
     plugins: [
